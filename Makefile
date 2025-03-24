@@ -80,4 +80,4 @@ cppcheck:
 		-I $(INCLUDE_DIRS) \
 		-i externals/printf \
 		-v \
-		src/fw/main.c
+		$(SRC_FILES)
