@@ -1,10 +1,11 @@
 # Directories
-MSPGCC_ROOT_DIR = /home/alexn/dev/tools/msp430-gcc
+TOOLS_DIR = ${TOOLS_PATH}
+MSPGCC_ROOT_DIR = $(TOOLS_DIR)/msp430-gcc
 MSPGCC_BIN_DIR = $(MSPGCC_ROOT_DIR)/bin
 MSPGCC_INCLUDE_DIR = $(MSPGCC_ROOT_DIR)/include
-MSP430_FLASHER_DIR = /home/alexn/dev/tools/MSPFlasher_1.3.20
+MSP430_FLASHER_DIR = $(TOOLS_DIR)/MSPFlasher_1.3.20
 
-INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR) $(MSPGCC_BIN_DIR)
+INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR) $(MSPGCC_BIN_DIR) $(FW_DIR) /external /external/printf
 LIB_DIRS = $(INCLUDE_DIRS)
 
 BUILD_DIR = build
@@ -31,14 +32,14 @@ SRC_NAMES = main.c
 SRC_FILES = $(addprefix $(FW_DIR)/, $(SRC_NAMES))
 
 OBJ_NAMES = $(SRC_NAMES:.c=.o)
-OBJ_FILES = $(addprefix $(OBJ_DIR)/ $(OBJ_NAMES))
+OBJ_FILES = $(addprefix $(OBJ_DIR)/, $(OBJ_NAMES))
 
 # Flags
 ## Compiler and Linker Flags
 MCU = msp430f5529
 W_FLAGS = -Wall -Wextra -Werror -Wshadow 
-C_FLAGS = -mmcu=$(MCU) $(WFLAGS) $(addprefix -I, $(INCLUDE_DIRS)) -Og -g
-LD_FLAGS = -mmcu=$(MCU) $(addprefix -I, $(LIB_DIRS))
+C_FLAGS = -mmcu=$(MCU) $(W_FLAGS) $(addprefix -I, $(INCLUDE_DIRS)) -Og -g
+LD_FLAGS = -mmcu=$(MCU) $(addprefix -L, $(LIB_DIRS))
 ## Flash Flags
 DEVICE = -n $(MCU)
 EXIT_SPECS = -z [VCC, RESET]
@@ -53,10 +54,14 @@ $(HEX_FILE): $(TARGET)
 
 ## Linking
 $(TARGET): $(OBJ_FILES)
+	@mkdir -p $(dir $@)
+	@mkdir -p $(dir $^)
 	$(CC) $(LD_FLAGS) $^ -o $@
 
 ## Compiling
-$(OBJ_DIR)/%.o: $(SRC_DIR)/%.c
+$(OBJ_DIR)/%.o: $(FW_DIR)/%.c
+	@mkdir -p $(dir $@)
+	@mkdir -p $(dir $^)
 	$(CC) $(C_FLAGS) -c -o $@ $^
 
 # PHONIES
@@ -72,6 +77,7 @@ flash: $(HEX_FILE)
 
 cppcheck: 
 	@$(CPPCHECK) --quiet --enable=all --error-exitcode=1 --inline-suppr \
-		-I $(INCLUDE_DIR) \
-		$(SRC_FILES)
-		-i externals/printf
+		-I $(INCLUDE_DIRS) \
+		-i externals/printf \
+		-v \
+		src/fw/main.c
