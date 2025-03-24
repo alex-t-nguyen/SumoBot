@@ -5,7 +5,7 @@ MSPGCC_BIN_DIR = $(MSPGCC_ROOT_DIR)/bin
 MSPGCC_INCLUDE_DIR = $(MSPGCC_ROOT_DIR)/include
 MSP430_FLASHER_DIR = $(TOOLS_DIR)/MSPFlasher_1.3.20
 
-INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR) $(MSPGCC_BIN_DIR)
+INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR) $(MSPGCC_BIN_DIR) $(FW_DIR) /external /external/printf
 LIB_DIRS = $(INCLUDE_DIRS)
 
 BUILD_DIR = build
@@ -77,6 +77,7 @@ flash: $(HEX_FILE)
 
 cppcheck: 
 	@$(CPPCHECK) --quiet --enable=all --error-exitcode=1 --inline-suppr \
-		-I $(INCLUDE_DIR) \
-		$(SRC_FILES) \
-		-i externals/printf
+		-I $(INCLUDE_DIRS) \
+		-i externals/printf \
+		-v \
+		$(SRC_FILES)
