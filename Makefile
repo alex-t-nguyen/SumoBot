@@ -31,7 +31,7 @@ SRC_NAMES = main.c
 SRC_FILES = $(addprefix $(FW_DIR)/, $(SRC_NAMES))
 
 OBJ_NAMES = $(SRC_NAMES:.c=.o)
-OBJ_FILES = $(addprefix $(OBJ_DIR)/ $(OBJ_NAMES))
+OBJ_FILES = $(addprefix $(OBJ_DIR)/, $(OBJ_NAMES))
 
 # Flags
 ## Compiler and Linker Flags
