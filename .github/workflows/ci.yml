@@ -1,5 +1,5 @@
 # Name of workflow
-name: Test Workflow
+name: CI
 
 # Define the trigger event(s)
 on: [push] # Push request
@@ -8,7 +8,7 @@ on: [push] # Push request
 jobs:
   # Job to build and do static analysis
   build_and_static_analysis:
-    runs-on: mint-latest
+    runs-on: ubuntu-latest
     container:
       image: alexn/msp430-gcc-9.3.1.11:latest
     steps:
