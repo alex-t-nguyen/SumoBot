@@ -10,7 +10,7 @@ jobs:
   build_and_static_analysis:
     runs-on: ubuntu-latest
     container:
-      image: alexn/msp430gcc-9.3.1.11:latest
+      image: anguyen00/msp430gcc-9.3.1.11:latest
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
