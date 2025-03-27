@@ -21,7 +21,7 @@ RM = rm
 MSP430_FLASHER = LD_LIBRARY_PATH=$(MSP430_FLASHER_DIR) $(MSP430_FLASHER_DIR)/MSP430Flasher
 CREATE_HEX_OUTFILE = $(MSPGCC_BIN_DIR)/msp430-elf-objcopy
 CPPCHECK = cppcheck
-
+FORMAT = clang-format-14
 # Files
 ## Output Files
 TARGET = $(BIN_DIR)/run_sumobot
@@ -65,7 +65,7 @@ $(OBJ_DIR)/%.o: $(FW_DIR)/%.c
 	$(CC) $(C_FLAGS) -c -o $@ $^
 
 # PHONIES
-.PHONY: all clean flash cppcheck
+.PHONY: all clean flash cppcheck format
 
 all: $(TARGET)
 
@@ -81,3 +81,6 @@ cppcheck:
 		-i externals/printf \
 		-v \
 		$(SRC_FILES)
+
+format:
+	@$(FORMAT) -i $(SRC_FILES)

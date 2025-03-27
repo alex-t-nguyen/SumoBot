@@ -14,6 +14,10 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
-      - run: TOOLS_PATH=/home/ubuntu/dev/tools/ make
-      - run: make cppcheck
+      - name: Format source files with clang
+        run: make format && git diff --quiet
+      - name: Build (compile and link) code with make
+        run: TOOLS_PATH=/home/ubuntu/dev/tools make
+      - name: Run static analysis
+        run: make cppcheck
 
