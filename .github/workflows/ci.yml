@@ -10,10 +10,16 @@ jobs:
   build_and_static_analysis:
     runs-on: ubuntu-latest
     container:
-      image: anguyen00/msp430gcc-9.3.1.11:latest
+      image: anguyen00/msp430gcc-9.3.1.11:v1
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
-      - run: TOOLS_PATH=/home/ubuntu/dev/tools/ make
-      - run: make cppcheck
+      - name: Check clang format version
+        run: clang-format --version 
+      - name: Format source files with clang
+        run: make format && git diff --quiet
+      - name: Build (compile and link) code with make
+        run: TOOLS_PATH=/home/ubuntu/dev/tools/ make
+      - name: Run static analysis
+        run: make cppcheck
 
