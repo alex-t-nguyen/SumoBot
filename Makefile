@@ -14,6 +14,11 @@ OBJ_DIR = $(BUILD_DIR)/obj
 
 SRC_DIR = src
 FW_DIR = $(SRC_DIR)/fw
+MOTORS_DIR = $(FW_DIR)/motors
+TEST_DIR = $(FW_DIR)/test
+DRIVERS_DIR = $(FW_DIR)/drivers
+APP_DIR = $(FW_DIR)/app
+COMMON_DIR = $(FW_DIR)/common
 
 # Toolchain
 CC = $(MSPGCC_BIN_DIR)/msp430-elf-gcc
@@ -28,11 +33,24 @@ TARGET = $(BIN_DIR)/run_sumobot
 HEX_FILE = $(TARGET).hex
 
 ## Input Files
-SRC_NAMES = main.c
-SRC_FILES = $(addprefix $(FW_DIR)/, $(SRC_NAMES))
+SRC_FILES_APP = drive.c enemy.c
+SRC_FILES_DRIVERS = i2c.c uart.c
+SRC_FILES_TEST = test.c
+SRC_FILES_MOTOR = motors.c
+SRC_FILES = $(FW_DIR)/main.c \
+			$(addprefix $(APP_DIR)/, $(SRC_FILES_APP)) \
+			$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS)) \
+			$(addprefix $(TEST_DIR)/, $(SRC_FILES_TEST)) \
+			$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR))
 
-OBJ_NAMES = $(SRC_NAMES:.c=.o)
-OBJ_FILES = $(addprefix $(OBJ_DIR)/, $(OBJ_NAMES))
+HEADER_FILES = $(COMMON_DIR)/defines.h \
+	$(addprefix $(APP_DIR)/, $(SRC_FILES_APP:.c=.h)) \
+	$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS:.c=.h))  \
+	$(addprefix $(TEST_DIR)/, $(SRC_FILES_TEST:.c=.h)) \
+	$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR:.c=.h))
+
+OBJ_NAMES = $(SRC_FILES:.c=.o)
+OBJ_FILES = $(patsubst $(FW_DIR)/%, $(OBJ_DIR)/%, $(OBJ_NAMES))
 
 # Flags
 ## Compiler and Linker Flags
@@ -53,15 +71,14 @@ $(HEX_FILE): $(TARGET)
 	$(CREATE_HEX_OUTFILE) -O ihex $^ $(HEX_FILE)
 
 ## Linking
-$(TARGET): $(OBJ_FILES)
+$(TARGET): $(OBJ_FILES) $(HEADER_FILES)
+	echo $(HEADER_FILES)
 	@mkdir -p $(dir $@)
-	@mkdir -p $(dir $^)
 	$(CC) $(LD_FLAGS) $^ -o $@
 
 ## Compiling
 $(OBJ_DIR)/%.o: $(FW_DIR)/%.c
 	@mkdir -p $(dir $@)
-	@mkdir -p $(dir $^)
 	$(CC) $(C_FLAGS) -c -o $@ $^
 
 # PHONIES
@@ -83,4 +100,4 @@ cppcheck:
 		$(SRC_FILES)
 
 format:
-	@$(FORMAT) -i $(SRC_FILES)
+	@$(FORMAT) -i $(SRC_FILES) $(HEADER_FILES)
