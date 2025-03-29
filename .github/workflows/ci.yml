@@ -14,6 +14,8 @@ jobs:
     steps:
       - name: Checkout the repository
         uses: actions/checkout@v3
+        with:
+          submodules: recursive # Get all submodules (linked repo's instead of copied (i.e. externals/printf))
       - name: Format source files with clang
         run: make format && git diff --quiet
       - name: Build (compile and link) code with make
