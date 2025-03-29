@@ -5,7 +5,7 @@ MSPGCC_BIN_DIR = $(MSPGCC_ROOT_DIR)/bin
 MSPGCC_INCLUDE_DIR = $(MSPGCC_ROOT_DIR)/include
 MSP430_FLASHER_DIR = $(TOOLS_DIR)/MSPFlasher_1.3.20
 
-INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR) $(MSPGCC_BIN_DIR) $(FW_DIR) /external /external/printf
+INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR) $(MSPGCC_BIN_DIR) $(FW_DIR) externals externals/printf
 LIB_DIRS = $(INCLUDE_DIRS)
 
 BUILD_DIR = build
@@ -35,16 +35,18 @@ HEX_FILE = $(TARGET).hex
 
 ## Input Files
 SRC_FILES_APP = drive.c enemy.c
-SRC_FILES_DRIVERS = i2c.c uart.c
+SRC_FILES_DRIVERS = io.c
 SRC_FILES_TEST = test.c
 SRC_FILES_MOTOR = motors.c
 SRC_FILES = $(FW_DIR)/main.c \
+			externals/printf/printf.c \
 			$(addprefix $(APP_DIR)/, $(SRC_FILES_APP)) \
 			$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS)) \
 			$(addprefix $(TEST_DIR)/, $(SRC_FILES_TEST)) \
 			$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR))
 
 HEADER_FILES = $(COMMON_DIR)/defines.h \
+	externals/printf/printf.h \
 	$(addprefix $(APP_DIR)/, $(SRC_FILES_APP:.c=.h)) \
 	$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS:.c=.h))  \
 	$(addprefix $(TEST_DIR)/, $(SRC_FILES_TEST:.c=.h)) \
@@ -73,7 +75,6 @@ $(HEX_FILE): $(TARGET)
 
 ## Linking
 $(TARGET): $(OBJ_FILES) $(HEADER_FILES)
-	echo $(HEADER_FILES)
 	@mkdir -p $(dir $@)
 	$(CC) $(LD_FLAGS) $^ -o $@
 
@@ -100,10 +101,14 @@ cppcheck:
 		$(addprefix -I, $(CPPCHECK_INCLUDES)) \
 		$(addprefix -i, $(CPPCHECK_IGNORE)) \
 		-v \
+		--suppress=missingInclude \
 		--suppress=missingIncludeSystem \
 		--suppress=unmatchedSuppression \
 		--suppress=unusedFunction \
-		$(SRC_FILES)
+		$(filter-out externals/printf/printf.c, $(SRC_FILES))
 
+FORMAT_INCLUDES = $(filter-out $(FORMAT_IGNORE), $(SRC_FILES)) $(filter-out $(FORMAT_IGNORE), $(HEADER_FILES))
+FORMAT_IGNORE = externals/printf/printf.h \
+				externals/printf/printf.c
 format:
-	$(FORMAT) --verbose -i $(SRC_FILES) $(HEADER_FILES)
+	$(FORMAT) --verbose -i $(FORMAT_INCLUDES)
