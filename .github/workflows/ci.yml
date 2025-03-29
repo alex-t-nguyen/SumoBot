@@ -19,7 +19,8 @@ jobs:
       - name: Build (compile and link) code with make
         run: |
           pwd
-          ls -a externals/
+          ls -a
+          ls externals/printf/
           TOOLS_PATH=/home/ubuntu/dev/tools make
       - name: Run static analysis
         run: make cppcheck
