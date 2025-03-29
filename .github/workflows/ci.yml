@@ -17,7 +17,10 @@ jobs:
       - name: Format source files with clang
         run: make format && git diff --quiet
       - name: Build (compile and link) code with make
-        run: TOOLS_PATH=/home/ubuntu/dev/tools make
+        run: |
+          pwd
+          ls -a
+          TOOLS_PATH=/home/ubuntu/dev/tools make
       - name: Run static analysis
         run: make cppcheck
 

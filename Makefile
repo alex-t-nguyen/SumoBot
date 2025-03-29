@@ -75,7 +75,6 @@ $(HEX_FILE): $(TARGET)
 
 ## Linking
 $(TARGET): $(OBJ_FILES) $(HEADER_FILES)
-	echo $(HEADER_FILES)
 	@mkdir -p $(dir $@)
 	$(CC) $(LD_FLAGS) $^ -o $@
 
