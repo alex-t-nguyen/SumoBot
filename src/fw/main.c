@@ -2,7 +2,6 @@
 #include <drivers/io.h>
 #include <msp430.h>
 #include <stdint.h>
-#include <stdio.h>
 
 int main(void) {
     WDTCTL =
