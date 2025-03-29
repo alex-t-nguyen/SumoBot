@@ -101,10 +101,11 @@ cppcheck:
 		$(addprefix -I, $(CPPCHECK_INCLUDES)) \
 		$(addprefix -i, $(CPPCHECK_IGNORE)) \
 		-v \
+		--suppress=missingInclude \
 		--suppress=missingIncludeSystem \
 		--suppress=unmatchedSuppression \
 		--suppress=unusedFunction \
-		$(SRC_FILES)
+		$(filter-out externals/printf/printf.c, $(SRC_FILES))
 
 FORMAT_INCLUDES = $(filter-out $(FORMAT_IGNORE), $(SRC_FILES)) $(filter-out $(FORMAT_IGNORE), $(HEADER_FILES))
 FORMAT_IGNORE = externals/printf/printf.h \
