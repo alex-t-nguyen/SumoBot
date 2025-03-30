@@ -146,8 +146,50 @@ typedef enum {
 
     // UART (Programming MCU)
     UART_TX = IO_33, // P3.3
-    UART_RX = IO_34  // P3.4
-#elif SUMO_BOT       // Actual sumo bot
+    UART_RX = IO_34, // P3.4
+
+    // Unused IO pins
+    IO_UNUSED_11 = IO_11,
+    IO_UNUSED_17 = IO_17,
+    IO_UNUSED_20 = IO_20,
+    IO_UNUSED_21 = IO_21,
+    IO_UNUSED_22 = IO_22,
+    IO_UNUSED_27 = IO_27,
+    IO_UNUSED_30 = IO_30,
+    IO_UNUSED_31 = IO_31,
+    IO_UNUSED_32 = IO_32,
+    IO_UNUSED_35 = IO_35,
+    IO_UNUSED_36 = IO_36,
+    IO_UNUSED_37 = IO_37,
+    IO_UNUSED_40 = IO_40,
+    IO_UNUSED_43 = IO_43,
+    IO_UNUSED_44 = IO_44,
+    IO_UNUSED_45 = IO_45,
+    IO_UNUSED_46 = IO_46,
+    IO_UNUSED_47 = IO_47,
+    IO_UNUSED_50 = IO_50,
+    IO_UNUSED_51 = IO_51,
+    IO_UNUSED_52 = IO_52,
+    IO_UNUSED_53 = IO_53,
+    IO_UNUSED_54 = IO_54,
+    IO_UNUSED_55 = IO_55,
+    IO_UNUSED_56 = IO_56,
+    IO_UNUSED_57 = IO_57,
+    IO_UNUSED_60 = IO_60,
+    IO_UNUSED_65 = IO_65,
+    IO_UNUSED_66 = IO_66,
+    IO_UNUSED_67 = IO_67,
+    IO_UNUSED_70 = IO_70,
+    IO_UNUSED_71 = IO_71,
+    IO_UNUSED_72 = IO_72,
+    IO_UNUSED_73 = IO_73,
+    IO_UNUSED_74 = IO_74,
+    IO_UNUSED_75 = IO_75,
+    IO_UNUSED_76 = IO_76,
+    IO_UNUSED_77 = IO_77,
+    IO_UNUSED_80 = IO_80,
+    IO_UNUSED_82 = IO_82
+#elif SUMO_BOT // Actual sumo bot
 
 #endif
 } io_signal_enum;
@@ -157,3 +199,4 @@ void io_set_dir(io_signal_enum pin, io_dir_enum dir);
 void io_set_ren(io_signal_enum pin, io_ren_enum enable);
 void io_set_out(io_signal_enum pin, io_out_enum out);
 void config_io(io_signal_enum pin, const struct io_config *config);
+void io_init(void);
