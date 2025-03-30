@@ -17,7 +17,7 @@ jobs:
         with:
           submodules: recursive # Get all submodules (linked repo's instead of copied (i.e. externals/printf))
       - name: Format source files with clang
-        run: make format && git diff --quiet
+        run: make format && git diff
       - name: Build (compile and link) code with make
         run: TOOLS_PATH=/home/ubuntu/dev/tools make
       - name: Run static analysis
