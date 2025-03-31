@@ -1,9 +1,9 @@
 # Check arguments
 ifeq ($(HW), LAUNCHPAD) # Compile for launchpad
-	TARGET_NAME = launchpad
+TARGET_NAME = launchpad
 else
 ifeq ($(HW), SUMOBOT) # Compile for PCB
-	TARGET_NAME = sumobot
+TARGET_NAME = sumobot
 # Don't require HW arg if doing make clean, cppcheck, or format
 else
 ifeq ($(MAKECMDGOALS), clean)
@@ -13,7 +13,7 @@ else
 ifeq ($(MAKECMDGOALS), format)
 # Must provide HW arg for make otherwise
 else
-	$(error "Must pass HW=LAUNCHPAD or HW=SUMOBOT)
+$(error "Must pass HW=LAUNCHPAD or HW=SUMOBOT)
 endif # Format
 endif # Cppcheck
 endif # Clean
@@ -22,7 +22,7 @@ endif # Launchpad
 
 # Defines
 HW_DEFINE = $(addprefix -D, $(HW))
-DEFINE = $(Hw_DEFINE)
+DEFINES = $(HW_DEFINE)
 
 # Directories
 TOOLS_DIR = ${TOOLS_PATH}
