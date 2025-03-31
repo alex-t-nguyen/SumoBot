@@ -18,8 +18,10 @@ jobs:
           submodules: recursive # Get all submodules (linked repo's instead of copied (i.e. externals/printf))
       - name: Format source files with clang
         run: make format && git diff
-      - name: Build (compile and link) code with make
-        run: TOOLS_PATH=/home/ubuntu/dev/tools make
       - name: Run static analysis
         run: make cppcheck
+      - name: Build (compile and link) code for Launchpad
+        run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD
+      - name: Build (compile and link) code for SumoBot (PCB)
+        run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=SUMOBOT
 

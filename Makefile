@@ -1,3 +1,29 @@
+# Check arguments
+ifeq ($(HW), LAUNCHPAD) # Compile for launchpad
+TARGET_NAME = launchpad
+else
+ifeq ($(HW), SUMOBOT) # Compile for PCB
+TARGET_NAME = sumobot
+# Don't require HW arg if doing make clean, cppcheck, or format
+else
+ifeq ($(MAKECMDGOALS), clean)
+else
+ifeq ($(MAKECMDGOALS), cppcheck)
+else
+ifeq ($(MAKECMDGOALS), format)
+# Must provide HW arg for make otherwise
+else
+$(error "Must pass HW=LAUNCHPAD or HW=SUMOBOT)
+endif # Format
+endif # Cppcheck
+endif # Clean
+endif # SumoBot
+endif # Launchpad
+
+# Defines
+HW_DEFINE = $(addprefix -D, $(HW))
+DEFINES = $(HW_DEFINE)
+
 # Directories
 TOOLS_DIR = ${TOOLS_PATH}
 MSPGCC_ROOT_DIR = $(TOOLS_DIR)/msp430-gcc
@@ -30,7 +56,7 @@ FORMAT = clang-format-14
 
 # Files
 ## Output Files
-TARGET = $(BIN_DIR)/run_sumobot
+TARGET = $(BIN_DIR)/$(TARGET_NAME)
 HEX_FILE = $(TARGET).hex
 
 ## Input Files
@@ -59,8 +85,8 @@ OBJ_FILES = $(patsubst $(FW_DIR)/%, $(OBJ_DIR)/%, $(OBJ_NAMES))
 ## Compiler and Linker Flags
 MCU = msp430f5529
 W_FLAGS = -Wall -Wextra -Werror -Wshadow 
-C_FLAGS = -mmcu=$(MCU) $(W_FLAGS) $(addprefix -I, $(INCLUDE_DIRS)) -Og -g
-LD_FLAGS = -mmcu=$(MCU) $(addprefix -L, $(LIB_DIRS))
+C_FLAGS = -mmcu=$(MCU) $(W_FLAGS) $(addprefix -I, $(INCLUDE_DIRS)) $(DEFINES) -Og -g
+LD_FLAGS = -mmcu=$(MCU) $(DEFINES) $(addprefix -L, $(LIB_DIRS))
 ## Flash Flags
 DEVICE = -n $(MCU)
 EXIT_SPECS = -z [VCC, RESET]
