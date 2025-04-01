@@ -39,9 +39,35 @@ static volatile uint8_t *const port_ren_regs[IO_PORT_CNT] = {
     &P1REN, &P2REN, &P3REN, &P4REN, &P5REN, &P6REN, &P7REN, &P8REN};
 static volatile uint8_t *const port_out_regs[IO_PORT_CNT] = {
     &P1OUT, &P2OUT, &P3OUT, &P4OUT, &P5OUT, &P6OUT, &P7OUT, &P8OUT};
+static volatile uint8_t *const port_in_regs[IO_PORT_CNT] = {
+    &P1IN, &P2IN, &P3IN, &P4IN, &P5IN, &P6IN, &P7IN, &P8IN};
+
+typedef enum {
+  HW_TYPE_LAUNCHPAD,
+  HW_TYPE_SUMOBOT 
+} hw_type_enum;
+
+static hw_type_enum io_detect_hw_type(void) {
+    const struct io_config hw_type_config = {
+            .io_sel=IO_SEL_GPIO, 
+            .io_dir=IO_DIR_INPUT,
+            .io_ren=IO_REN_DISABLE,
+            .io_out=IO_OUT_LOW};
+    config_io(DETECT_HW_TYPE_PIN, &hw_type_config);
+
+    // Read pin value
+    // 1. Get port and pin number
+    // 2. Get input value at pin and shift down to 1 bit to check 1 or 0
+    uint8_t port = calc_io_port(DETECT_HW_TYPE_PIN);
+    uint8_t pin = calc_io_pin(DETECT_HW_TYPE_PIN);
+    return (*port_in_regs[port] &= pin) >> pin ? HW_TYPE_SUMOBOT : HW_TYPE_LAUNCHPAD;
+}
 
 static const struct io_config io_initial_configs[IO_PORT_CNT *
                                                  IO_PINS_PER_PORT_CNT] = {
+    // Detect HW Type pin
+    [DETECT_HW_TYPE_PIN] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_DISABLE, IO_OUT_LOW},
+                                                         
     // Test LED for BlinkLED program
     [IO_TEST_LED] = {IO_SEL_GPIO, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
 
@@ -91,7 +117,7 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
     [IO_UNUSED_32] = IO_UNUSED_CONFIG,
     [IO_UNUSED_35] = IO_UNUSED_CONFIG,
     [IO_UNUSED_36] = IO_UNUSED_CONFIG,
-    [IO_UNUSED_37] = IO_UNUSED_CONFIG,
+    //[IO_UNUSED_37] = IO_UNUSED_CONFIG,
     [IO_UNUSED_40] = IO_UNUSED_CONFIG,
     [IO_UNUSED_43] = IO_UNUSED_CONFIG,
     [IO_UNUSED_44] = IO_UNUSED_CONFIG,
@@ -186,6 +212,20 @@ void config_io(io_signal_enum signal, const struct io_config *config) {
 }
 
 void io_init(void) {
+    #if defined (SUMOBOT)
+    if(io_detect_hw_type() != HW_TYPE_SUMOBOT) {
+        // ToDo: Assert
+        while (1) {}; 
+    }
+    #elif defined (LAUNCHPAD)
+    if(io_detect_hw_type() != HW_TYPE_LAUNCHPAD) {
+        // ToDo: Assert
+        while(1) {};
+    }
+    #else
+        // ToDo: Assert
+        while(1) {};
+    #endif
     for (io_signal_enum pin = (io_signal_enum)IO_10;
          pin < ARRAY_SIZE(io_initial_configs); pin++) {
         config_io(pin, &io_initial_configs[pin]);

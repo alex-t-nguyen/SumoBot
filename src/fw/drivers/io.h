@@ -189,7 +189,11 @@ struct io_config {
 
 typedef enum {
 #ifdef LAUNCHPAD // Launchpad (MSP430F5529)
-    IO_TEST_LED = IO_10,
+    // Detect HW Type pin
+    DETECT_HW_TYPE_PIN = IO_37, // P3.7
+    
+    // IO Test LED  
+    IO_TEST_LED = IO_10, // P1.0
     // Motor pins (IN1 -> AIN1 and BIN1, IN2 -> AIN2 and BIN2) (Motors on same
     // sides will share same PWM input signal)
     MOTOR_RIGHT_IN1 = IO_25, // P2.5
@@ -232,7 +236,7 @@ typedef enum {
     IO_UNUSED_32 = IO_32,
     IO_UNUSED_35 = IO_35,
     IO_UNUSED_36 = IO_36,
-    IO_UNUSED_37 = IO_37,
+    //IO_UNUSED_37 = IO_37,
     IO_UNUSED_40 = IO_40,
     IO_UNUSED_43 = IO_43,
     IO_UNUSED_44 = IO_44,
@@ -262,6 +266,10 @@ typedef enum {
     IO_UNUSED_80 = IO_80,
     IO_UNUSED_82 = IO_82
 #elif SUMOBOT // Actual sumo bot
+    // Detect HW Type pin
+    DETECT_HW_TYPE_PIN = IO_37,
+
+    // IO Test LED
     IO_TEST_LED = IO_10,
     // Motor pins (IN1 -> AIN1 and BIN1, IN2 -> AIN2 and BIN2) (Motors on same
     // sides will share same PWM input signal)
@@ -305,7 +313,7 @@ typedef enum {
     IO_UNUSED_32 = IO_32,
     IO_UNUSED_35 = IO_35,
     IO_UNUSED_36 = IO_36,
-    IO_UNUSED_37 = IO_37,
+    //IO_UNUSED_37 = IO_37,
     IO_UNUSED_40 = IO_40,
     IO_UNUSED_43 = IO_43,
     IO_UNUSED_44 = IO_44,
