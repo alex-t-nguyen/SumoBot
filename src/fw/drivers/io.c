@@ -60,7 +60,7 @@ static hw_type_enum io_detect_hw_type(void) {
     // 2. Get input value at pin and shift down to 1 bit to check 1 or 0
     uint8_t port = calc_io_port(DETECT_HW_TYPE_PIN);
     uint8_t pin = calc_io_pin(DETECT_HW_TYPE_PIN);
-    return (*port_in_regs[port] &= pin) >> pin ? HW_TYPE_SUMOBOT : HW_TYPE_LAUNCHPAD;
+    return ((*port_in_regs[port] &= pin) >> pin) ? HW_TYPE_SUMOBOT : HW_TYPE_LAUNCHPAD;
 }
 
 static const struct io_config io_initial_configs[IO_PORT_CNT *
