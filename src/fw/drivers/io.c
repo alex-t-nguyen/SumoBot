@@ -51,7 +51,7 @@ static hw_type_enum io_detect_hw_type(void) {
     const struct io_config hw_type_config = {
             .io_sel=IO_SEL_GPIO, 
             .io_dir=IO_DIR_INPUT,
-            .io_ren=IO_REN_DISABLE,
+            .io_ren=IO_REN_ENABLE,
             .io_out=IO_OUT_LOW};
     config_io(DETECT_HW_TYPE_PIN, &hw_type_config);
 
@@ -60,7 +60,8 @@ static hw_type_enum io_detect_hw_type(void) {
     // 2. Get input value at pin and shift down to 1 bit to check 1 or 0
     uint8_t port = calc_io_port(DETECT_HW_TYPE_PIN);
     uint8_t pin = calc_io_pin(DETECT_HW_TYPE_PIN);
-    return ((*port_in_regs[port] &= pin) >> pin) ? HW_TYPE_SUMOBOT : HW_TYPE_LAUNCHPAD;
+    uint8_t pin_index = calc_io_pin_index(DETECT_HW_TYPE_PIN);
+    return ((*port_in_regs[port] &= pin) >> pin_index) ? HW_TYPE_SUMOBOT : HW_TYPE_LAUNCHPAD;
 }
 
 static const struct io_config io_initial_configs[IO_PORT_CNT *
@@ -230,4 +231,22 @@ void io_init(void) {
          pin < ARRAY_SIZE(io_initial_configs); pin++) {
         config_io(pin, &io_initial_configs[pin]);
     }
+}
+
+void io_get_current_config(io_signal_enum signal, struct io_config *config) {
+   const uint8_t port = calc_io_port(signal);
+   const uint8_t pin = calc_io_pin(signal);
+   const uint8_t pin_index = calc_io_pin_index(signal);
+
+   config->io_sel = (io_sel_enum)((*port_sel_regs[port] & pin) >> pin_index);
+   config->io_dir = (io_dir_enum)((*port_dir_regs[port] & pin) >> pin_index);
+   config->io_ren = (io_ren_enum)((*port_ren_regs[port] & pin) >> pin_index);
+   config->io_out = (io_out_enum)((*port_out_regs[port] & pin) >> pin_index);
+}
+
+bool io_config_compare(const struct io_config *cfg1, const struct io_config *cfg2) {
+   return cfg1->io_sel == cfg2->io_sel &&
+          cfg1->io_dir == cfg2->io_dir &&
+          cfg1->io_ren == cfg2->io_ren &&
+          cfg1->io_out == cfg2->io_out;
 }
