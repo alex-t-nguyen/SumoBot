@@ -88,7 +88,7 @@ OBJ_FILES = $(patsubst $(FW_DIR)/%, $(OBJ_DIR)/%, $(OBJ_NAMES))
 ## Compiler and Linker Flags
 MCU = msp430f5529
 W_FLAGS = -Wall -Wextra -Werror -Wshadow 
-C_FLAGS = -mmcu=$(MCU) $(W_FLAGS) $(addprefix -I, $(INCLUDE_DIRS)) $(DEFINES) -Og -g
+C_FLAGS = -mmcu=$(MCU) $(W_FLAGS) $(addprefix -I, $(INCLUDE_DIRS)) $(DEFINES) -Og -g -fshort-enums
 LD_FLAGS = -mmcu=$(MCU) $(DEFINES) $(addprefix -L, $(LIB_DIRS))
 ## Flash Flags
 DEVICE = -n $(MCU)
