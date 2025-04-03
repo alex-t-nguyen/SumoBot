@@ -42,17 +42,13 @@ static volatile uint8_t *const port_out_regs[IO_PORT_CNT] = {
 static volatile uint8_t *const port_in_regs[IO_PORT_CNT] = {
     &P1IN, &P2IN, &P3IN, &P4IN, &P5IN, &P6IN, &P7IN, &P8IN};
 
-typedef enum {
-  HW_TYPE_LAUNCHPAD,
-  HW_TYPE_SUMOBOT 
-} hw_type_enum;
+typedef enum { HW_TYPE_LAUNCHPAD, HW_TYPE_SUMOBOT } hw_type_enum;
 
 static hw_type_enum io_detect_hw_type(void) {
-    const struct io_config hw_type_config = {
-            .io_sel=IO_SEL_GPIO, 
-            .io_dir=IO_DIR_INPUT,
-            .io_ren=IO_REN_ENABLE,
-            .io_out=IO_OUT_LOW};
+    const struct io_config hw_type_config = {.io_sel = IO_SEL_GPIO,
+                                             .io_dir = IO_DIR_INPUT,
+                                             .io_ren = IO_REN_ENABLE,
+                                             .io_out = IO_OUT_LOW};
     config_io(DETECT_HW_TYPE_PIN, &hw_type_config);
 
     // Read pin value
@@ -61,14 +57,16 @@ static hw_type_enum io_detect_hw_type(void) {
     uint8_t port = calc_io_port(DETECT_HW_TYPE_PIN);
     uint8_t pin = calc_io_pin(DETECT_HW_TYPE_PIN);
     uint8_t pin_index = calc_io_pin_index(DETECT_HW_TYPE_PIN);
-    return ((*port_in_regs[port] &= pin) >> pin_index) ? HW_TYPE_SUMOBOT : HW_TYPE_LAUNCHPAD;
+    return ((*port_in_regs[port] &= pin) >> pin_index) ? HW_TYPE_SUMOBOT
+                                                       : HW_TYPE_LAUNCHPAD;
 }
 
 static const struct io_config io_initial_configs[IO_PORT_CNT *
                                                  IO_PINS_PER_PORT_CNT] = {
     // Detect HW Type pin
-    [DETECT_HW_TYPE_PIN] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_DISABLE, IO_OUT_LOW},
-                                                         
+    [DETECT_HW_TYPE_PIN] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_DISABLE,
+                            IO_OUT_LOW},
+
     // Test LED for BlinkLED program
     [IO_TEST_LED] = {IO_SEL_GPIO, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
 
@@ -87,7 +85,7 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
     [I2C_SDA] = {IO_SEL_ALT1, IO_DIR_OUTPUT, IO_REN_ENABLE, IO_OUT_HIGH},
     [I2C_SCL] = {IO_SEL_ALT1, IO_DIR_OUTPUT, IO_REN_ENABLE, IO_OUT_HIGH},
     //-- Range sensor is open drain and should be pulled up by external pullup
-    //resistor on PCB instead
+    // resistor on PCB instead
     [RANGE_INTERRUPT_RIGHT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE,
                                IO_OUT_LOW},
     [RANGE_INTERRUPT_MIDDLE] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE,
@@ -213,20 +211,23 @@ void config_io(io_signal_enum signal, const struct io_config *config) {
 }
 
 void io_init(void) {
-    #if defined (SUMOBOT)
-    if(io_detect_hw_type() != HW_TYPE_SUMOBOT) {
+#if defined(SUMOBOT)
+    if (io_detect_hw_type() != HW_TYPE_SUMOBOT) {
         // ToDo: Assert
-        while (1) {}; 
+        while (1) {
+        };
     }
-    #elif defined (LAUNCHPAD)
-    if(io_detect_hw_type() != HW_TYPE_LAUNCHPAD) {
+#elif defined(LAUNCHPAD)
+    if (io_detect_hw_type() != HW_TYPE_LAUNCHPAD) {
         // ToDo: Assert
-        while(1) {};
+        while (1) {
+        };
     }
-    #else
-        // ToDo: Assert
-        while(1) {};
-    #endif
+#else
+    // ToDo: Assert
+    while (1) {
+    };
+#endif
     for (io_signal_enum pin = (io_signal_enum)IO_10;
          pin < ARRAY_SIZE(io_initial_configs); pin++) {
         config_io(pin, &io_initial_configs[pin]);
@@ -234,19 +235,18 @@ void io_init(void) {
 }
 
 void io_get_current_config(io_signal_enum signal, struct io_config *config) {
-   const uint8_t port = calc_io_port(signal);
-   const uint8_t pin = calc_io_pin(signal);
-   const uint8_t pin_index = calc_io_pin_index(signal);
+    const uint8_t port = calc_io_port(signal);
+    const uint8_t pin = calc_io_pin(signal);
+    const uint8_t pin_index = calc_io_pin_index(signal);
 
-   config->io_sel = (io_sel_enum)((*port_sel_regs[port] & pin) >> pin_index);
-   config->io_dir = (io_dir_enum)((*port_dir_regs[port] & pin) >> pin_index);
-   config->io_ren = (io_ren_enum)((*port_ren_regs[port] & pin) >> pin_index);
-   config->io_out = (io_out_enum)((*port_out_regs[port] & pin) >> pin_index);
+    config->io_sel = (io_sel_enum)((*port_sel_regs[port] & pin) >> pin_index);
+    config->io_dir = (io_dir_enum)((*port_dir_regs[port] & pin) >> pin_index);
+    config->io_ren = (io_ren_enum)((*port_ren_regs[port] & pin) >> pin_index);
+    config->io_out = (io_out_enum)((*port_out_regs[port] & pin) >> pin_index);
 }
 
-bool io_config_compare(const struct io_config *cfg1, const struct io_config *cfg2) {
-   return cfg1->io_sel == cfg2->io_sel &&
-          cfg1->io_dir == cfg2->io_dir &&
-          cfg1->io_ren == cfg2->io_ren &&
-          cfg1->io_out == cfg2->io_out;
+bool io_config_compare(const struct io_config *cfg1,
+                       const struct io_config *cfg2) {
+    return cfg1->io_sel == cfg2->io_sel && cfg1->io_dir == cfg2->io_dir &&
+           cfg1->io_ren == cfg2->io_ren && cfg1->io_out == cfg2->io_out;
 }
