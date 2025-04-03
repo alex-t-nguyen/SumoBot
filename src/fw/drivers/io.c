@@ -217,9 +217,9 @@ void config_io(io_signal_enum signal, const struct io_config *config) {
 
 void io_init(void) {
 #if defined(SUMOBOT)
-    ASSERT(io_detect_hw_type() == HW_TYPE_SUMOBOT) {
+    ASSERT(io_detect_hw_type() == HW_TYPE_SUMOBOT)
 #elif defined(LAUNCHPAD)
-    ASSERT(io_detect_hw_type() == HW_TYPE_LAUNCHPAD) {
+    ASSERT(io_detect_hw_type() == HW_TYPE_LAUNCHPAD)
 #else
     ASSERT(0)
 #endif
