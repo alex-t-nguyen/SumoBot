@@ -61,22 +61,25 @@ HEX_FILE = $(TARGET).hex
 
 ## Input Files
 SRC_FILES_APP = drive.c enemy.c
-SRC_FILES_DRIVERS = io.c
+SRC_FILES_DRIVERS = io.c led.c
 SRC_FILES_TEST = test.c
 SRC_FILES_MOTOR = motors.c
+SRC_FILES_COMMON = assert_handler.c
 SRC_FILES = $(FW_DIR)/main.c \
 			externals/printf/printf.c \
 			$(addprefix $(APP_DIR)/, $(SRC_FILES_APP)) \
 			$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS)) \
 			$(addprefix $(TEST_DIR)/, $(SRC_FILES_TEST)) \
-			$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR))
+			$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR)) \
+			$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON))
 
 HEADER_FILES = $(COMMON_DIR)/defines.h \
 	externals/printf/printf.h \
 	$(addprefix $(APP_DIR)/, $(SRC_FILES_APP:.c=.h)) \
 	$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS:.c=.h))  \
 	$(addprefix $(TEST_DIR)/, $(SRC_FILES_TEST:.c=.h)) \
-	$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR:.c=.h))
+	$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR:.c=.h)) \
+	$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON:.c=.h))
 
 OBJ_NAMES = $(SRC_FILES:.c=.o)
 OBJ_FILES = $(patsubst $(FW_DIR)/%, $(OBJ_DIR)/%, $(OBJ_NAMES))
