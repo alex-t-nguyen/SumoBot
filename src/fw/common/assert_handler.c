@@ -13,7 +13,10 @@ void assert_handler(void) {
     // TODO: Turn off motors ("safe state")
     // TODO: Trace to console
     BREAKPOINT
-
+    
+    /* Manually blink LED here to avoid recursive assert possibly happening
+     * because led_init() and set_led() use asserts
+     */
     // Configure IO_TEST_LED pin
     P1SEL &= ~(BIT0);
     P1DIR |= (BIT0);

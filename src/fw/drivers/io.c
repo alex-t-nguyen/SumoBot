@@ -1,7 +1,9 @@
 #include "drivers/io.h"
 #include "common/defines.h"
+#include "common/assert_handler.h"
 #include <msp430.h>
 #include <stdint.h>
+#include <assert.h>
 
 #define IO_PORT_CNT (8U)          // Number of ports in MSP430F5529
 #define IO_PINS_PER_PORT_CNT (8U) // Number of pins per port in MSP430F5529
@@ -13,6 +15,10 @@
 // Decided to use pulldown input
 #define IO_UNUSED_CONFIG                                                       \
     { IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE, IO_OUT_LOW }
+
+// With -fshort-enums compiler flag, enums are set to 1 byte instead of 2 bytes
+// io_generic_enum should not > 1 byte (8 bits) since all the values are between 0-255 (8 bits)
+static_assert(sizeof(io_generic_enum)==1, "Unexpected size, -fshort-enums missing?");
 
 static inline uint8_t calc_io_port(io_signal_enum signal) {
     return (signal >> IO_PORT_OFFSET) & (IO_PORT_MASK);
@@ -212,21 +218,11 @@ void config_io(io_signal_enum signal, const struct io_config *config) {
 
 void io_init(void) {
 #if defined(SUMOBOT)
-    if (io_detect_hw_type() != HW_TYPE_SUMOBOT) {
-        // ToDo: Assert
-        while (1) {
-        };
-    }
+    ASSERT(io_detect_hw_type() == HW_TYPE_SUMOBOT)
 #elif defined(LAUNCHPAD)
-    if (io_detect_hw_type() != HW_TYPE_LAUNCHPAD) {
-        // ToDo: Assert
-        while (1) {
-        };
-    }
+    ASSERT(io_detect_hw_type() == HW_TYPE_LAUNCHPAD)
 #else
-    // ToDo: Assert
-    while (1) {
-    };
+    ASSERT(0)
 #endif
     for (io_signal_enum pin = (io_signal_enum)IO_10;
          pin < ARRAY_SIZE(io_initial_configs); pin++) {
