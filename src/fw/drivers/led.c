@@ -1,17 +1,15 @@
 #include "led.h"
 #include "common/assert_handler.h"
-#include "drivers/io.h"
 #include "common/defines.h"
+#include "drivers/io.h"
 #include <stdbool.h>
 
 static bool initialized = false;
 
-static const struct io_config led_config = {
-    .io_sel = IO_SEL_GPIO,
-    .io_dir = IO_DIR_OUTPUT,
-    .io_ren = IO_REN_DISABLE,
-    .io_out = IO_OUT_LOW 
-};
+static const struct io_config led_config = {.io_sel = IO_SEL_GPIO,
+                                            .io_dir = IO_DIR_OUTPUT,
+                                            .io_ren = IO_REN_DISABLE,
+                                            .io_out = IO_OUT_LOW};
 
 void led_init(void) {
     ASSERT(!initialized);
@@ -24,9 +22,9 @@ void led_init(void) {
 void set_led(led_enum led, led_state_enum state) {
     ASSERT(initialized);
     const io_out_enum out = (state == LED_STATE_OFF) ? IO_OUT_LOW : IO_OUT_HIGH;
-    switch(led) {
-        case TEST_LED:
-           io_set_out(IO_TEST_LED, out);
-           break;
+    switch (led) {
+    case TEST_LED:
+        io_set_out(IO_TEST_LED, out);
+        break;
     }
 }

@@ -192,10 +192,10 @@ typedef enum {
 #ifdef LAUNCHPAD // Launchpad (MSP430F5529)
     // Detect HW Type pin
     DETECT_HW_TYPE_PIN = IO_37, // P3.7
-    
-    // IO Test LED  
+
+    // IO Test LED
     IO_TEST_LED = IO_10, // P1.0
-    
+
     // Motor pins (IN1 -> AIN1 and BIN1, IN2 -> AIN2 and BIN2) (Motors on same
     // sides will share same PWM input signal)
     MOTOR_RIGHT_IN1 = IO_25, // P2.5
@@ -238,7 +238,7 @@ typedef enum {
     IO_UNUSED_32 = IO_32,
     IO_UNUSED_35 = IO_35,
     IO_UNUSED_36 = IO_36,
-    //IO_UNUSED_37 = IO_37,
+    // IO_UNUSED_37 = IO_37,
     IO_UNUSED_40 = IO_40,
     IO_UNUSED_43 = IO_43,
     IO_UNUSED_44 = IO_44,
@@ -315,7 +315,7 @@ typedef enum {
     IO_UNUSED_32 = IO_32,
     IO_UNUSED_35 = IO_35,
     IO_UNUSED_36 = IO_36,
-    //IO_UNUSED_37 = IO_37,
+    // IO_UNUSED_37 = IO_37,
     IO_UNUSED_40 = IO_40,
     IO_UNUSED_43 = IO_43,
     IO_UNUSED_44 = IO_44,
@@ -355,4 +355,5 @@ void io_set_out(io_signal_enum pin, io_out_enum out);
 void config_io(io_signal_enum pin, const struct io_config *config);
 void io_init(void);
 void io_get_current_config(io_signal_enum pin, struct io_config *config);
-bool io_config_compare(const struct io_config *cfg1, const struct io_config *cfg2);
+bool io_config_compare(const struct io_config *cfg1,
+                       const struct io_config *cfg2);
