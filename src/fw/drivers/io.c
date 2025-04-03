@@ -217,21 +217,11 @@ void config_io(io_signal_enum signal, const struct io_config *config) {
 
 void io_init(void) {
 #if defined(SUMOBOT)
-    if (io_detect_hw_type() != HW_TYPE_SUMOBOT) {
-        // ToDo: Assert
-        while (1) {
-        };
-    }
+    ASSERT(io_detect_hw_type() == HW_TYPE_SUMOBOT) {
 #elif defined(LAUNCHPAD)
-    if (io_detect_hw_type() != HW_TYPE_LAUNCHPAD) {
-        // ToDo: Assert
-        while (1) {
-        };
-    }
+    ASSERT(io_detect_hw_type() == HW_TYPE_LAUNCHPAD) {
 #else
-    // ToDo: Assert
-    while (1) {
-    };
+    ASSERT(0)
 #endif
     for (io_signal_enum pin = (io_signal_enum)IO_10;
          pin < ARRAY_SIZE(io_initial_configs); pin++) {
