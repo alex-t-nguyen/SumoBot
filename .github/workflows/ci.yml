@@ -24,4 +24,6 @@ jobs:
         run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=LAUNCHPAD
       - name: Build (compile and link) code for SumoBot (PCB)
         run: TOOLS_PATH=/home/ubuntu/dev/tools make HW=SUMOBOT
+      - name: Run test script that builds all of the test functions
+        run: TOOLS_PATH=/home/ubuntu/dev/tools tools/build_tests.sh 
 

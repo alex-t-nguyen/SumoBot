@@ -1,9 +1,9 @@
 # Check arguments
 ifeq ($(HW), LAUNCHPAD) # Compile for launchpad
-TARGET_NAME = launchpad
+TARGET_HW = launchpad
 else
 ifeq ($(HW), SUMOBOT) # Compile for PCB
-TARGET_NAME = sumobot
+TARGET_HW = sumobot
 # Don't require HW arg if doing make clean, cppcheck, or format
 else
 ifeq ($(MAKECMDGOALS), clean)
@@ -20,9 +20,19 @@ endif # Clean
 endif # SumoBot
 endif # Launchpad
 
+TARGET_NAME=$(TARGET_HW)
+ifneq ($(TEST),) # TEST argument
+ifeq ($(findstring test_, $(TEST)),)
+$(error "TEST=$(TEST) is invalid (test function must start with test_)")
+else
+TARGET_NAME=$(TEST)
+endif
+endif
+
 # Defines
 HW_DEFINE = $(addprefix -D, $(HW))
-DEFINES = $(HW_DEFINE)
+TEST_DEFINE = $(addprefix -DTEST=, $(TEST))
+DEFINES = $(HW_DEFINE) $(TEST_DEFINE)
 
 # Directories
 TOOLS_DIR = ${TOOLS_PATH}
@@ -34,7 +44,7 @@ MSP430_FLASHER_DIR = $(TOOLS_DIR)/MSPFlasher_1.3.20
 INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR) $(MSPGCC_BIN_DIR) $(FW_DIR) externals externals/printf
 LIB_DIRS = $(INCLUDE_DIRS)
 
-BUILD_DIR = build/$(TARGET_NAME)
+BUILD_DIR = build
 BIN_DIR = $(BUILD_DIR)/bin
 OBJ_DIR = $(BUILD_DIR)/obj
 
@@ -56,20 +66,22 @@ FORMAT = clang-format-14
 
 # Files
 ## Output Files
-TARGET = $(BIN_DIR)/$(TARGET_NAME)
+TARGET = $(BIN_DIR)/$(TARGET_HW)/$(TARGET_NAME)
 HEX_FILE = $(TARGET).hex
 
 ## Input Files
+ifndef TEST
+MAIN_SRC_FILE = $(FW_DIR)/main.c
+else
+MAIN_SRC_FILE = $(TEST_DIR)/$(TEST).c
+endif
 SRC_FILES_APP = drive.c enemy.c
-SRC_FILES_DRIVERS = io.c led.c
-SRC_FILES_TEST = test.c
+SRC_FILES_DRIVERS = io.c led.c mcu_init.c
 SRC_FILES_MOTOR = motors.c
 SRC_FILES_COMMON = assert_handler.c
-SRC_FILES = $(FW_DIR)/main.c \
-			externals/printf/printf.c \
+SRC_FILES = externals/printf/printf.c \
 			$(addprefix $(APP_DIR)/, $(SRC_FILES_APP)) \
 			$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS)) \
-			$(addprefix $(TEST_DIR)/, $(SRC_FILES_TEST)) \
 			$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR)) \
 			$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON))
 
@@ -82,7 +94,9 @@ HEADER_FILES = $(COMMON_DIR)/defines.h \
 	$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON:.c=.h))
 
 OBJ_NAMES = $(SRC_FILES:.c=.o)
+MAIN_OBJ_NAMES = $(MAIN_SRC_FILE:.c=.o)
 OBJ_FILES = $(patsubst $(FW_DIR)/%, $(OBJ_DIR)/%, $(OBJ_NAMES))
+MAIN_OBJ_FILES = $(patsubst $(FW_DIR)/%, $(OBJ_DIR)/%, $(MAIN_OBJ_NAMES))
 
 # Flags
 ## Compiler and Linker Flags
@@ -103,7 +117,7 @@ $(HEX_FILE): $(TARGET)
 	$(CREATE_HEX_OUTFILE) -O ihex $^ $(HEX_FILE)
 
 ## Linking
-$(TARGET): $(OBJ_FILES) $(HEADER_FILES)
+$(TARGET): $(OBJ_FILES) $(MAIN_OBJ_FILES) $(HEADER_FILES)
 	@mkdir -p $(dir $@)
 	$(CC) $(LD_FLAGS) $^ -o $@
 
@@ -111,6 +125,15 @@ $(TARGET): $(OBJ_FILES) $(HEADER_FILES)
 $(OBJ_DIR)/%.o: $(FW_DIR)/%.c
 	@mkdir -p $(dir $@)
 	$(CC) $(C_FLAGS) -c -o $@ $^
+ifndef TEST
+$(OBJ_DIR)/main.o: $(FW_DIR)/main.c
+	@mkdir -p $(dir $@)
+	$(CC) $(C_FLAGS) -c -o $@ $^
+else
+$(OBJ_DIR)/test/$(TEST).o: $(TEST_DIR)/test.c
+	@mkdir -p $(dir $@)
+	$(CC) $(C_FLAGS) -c -o $@ $^
+endif	
 
 # PHONIES
 .PHONY: all clean flash cppcheck format
