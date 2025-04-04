@@ -1,4 +1,4 @@
-#!bin/bash
+#!/usr/bin/bash
 
 # This script is used by CI to build all test functions
 
