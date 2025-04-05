@@ -6,4 +6,3 @@ void mcu_init(void) {
         WDTHOLD; // stop watchdog timer, otherwise it prevents program from
                  // running because it keeps restarting from watchdog timeout
 }
-
