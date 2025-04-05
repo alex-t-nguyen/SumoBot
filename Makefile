@@ -60,6 +60,8 @@ COMMON_DIR = $(FW_DIR)/common
 CC = $(MSPGCC_BIN_DIR)/msp430-elf-gcc
 RM = rm
 MSP430_FLASHER = LD_LIBRARY_PATH=$(MSP430_FLASHER_DIR) $(MSP430_FLASHER_DIR)/MSP430Flasher
+MSP430_ELF_SIZE = $(MSPGCC_BIN_DIR)/msp430-elf-size
+MSP430_READ_ELF = $(MSPGCC_BIN_DIR)/msp430-elf-readelf
 CREATE_HEX_OUTFILE = $(MSPGCC_BIN_DIR)/msp430-elf-objcopy
 CPPCHECK = cppcheck
 FORMAT = clang-format-14
@@ -164,3 +166,10 @@ FORMAT_IGNORE = externals/printf/printf.h \
 				externals/printf/printf.c
 format:
 	$(FORMAT) --verbose -i $(FORMAT_INCLUDES)
+
+size: $(TARGET)
+	@$(MSP430_ELF_SIZE) $(TARGET)
+
+symbols: $(TARGET)
+	# List symbols table sorted by size
+	@$(MSP430_READ_ELF) -s $(TARGET) | sort -n -k3 
