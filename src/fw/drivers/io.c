@@ -3,14 +3,15 @@
 #include "common/defines.h"
 #include <assert.h>
 #include <msp430.h>
+#include <stddef.h>
 #include <stdint.h>
 
-#define IO_PORT_CNT (8U)          // Number of ports in MSP430F5529
-#define IO_PINS_PER_PORT_CNT (8U) // Number of pins per port in MSP430F5529
-#define IO_PORT_OFFSET (3U)       // Port number = bits 3-5
-#define IO_PORT_MASK (7U)         // 3'b111
-#define IO_PIN_MASK (7U)          // 3'b111
-
+#define IO_PORT_CNT (8U)           // Number of ports in MSP430F5529
+#define IO_PINS_PER_PORT_CNT (8U)  // Number of pins per port in MSP430F5529
+#define IO_PORT_OFFSET (3U)        // Port number = bits 3-5
+#define IO_PORT_MASK (7U)          // 3'b111
+#define IO_PIN_MASK (7U)           // 3'b111
+#define IO_INTERRUPT_PORT_CNT (2U) // Number of interrupt ports
 // Unused IO pins set to either GPIO output, or pullup/down input
 // Decided to use pulldown input
 #define IO_UNUSED_CONFIG                                                       \
@@ -34,6 +35,8 @@ static inline uint8_t calc_io_pin(io_signal_enum signal) {
     return 1 << calc_io_pin_index(signal);
 }
 
+typedef enum { IO_PORT1, IO_PORT2 } io_port_enum;
+
 // Store address of memory-mapped registers to be accessed via array
 // If you were to store the value P1DIR, it would no longer be memory mapped
 // when accessing through the array because the array just copies the value of
@@ -50,6 +53,16 @@ static volatile uint8_t *const port_out_regs[IO_PORT_CNT] = {
 static volatile uint8_t *const port_in_regs[IO_PORT_CNT] = {
     &P1IN, &P2IN, &P3IN, &P4IN, &P5IN, &P6IN, &P7IN, &P8IN};
 
+static volatile uint8_t *const port_interrupt_flag_regs[IO_INTERRUPT_PORT_CNT] =
+    {&P1IFG, &P2IFG};
+static volatile uint8_t *const
+    port_interrupt_edge_select_regs[IO_INTERRUPT_PORT_CNT] = {&P1IES, &P2IES};
+static volatile uint8_t
+    *const port_interrupt_enable_regs[IO_INTERRUPT_PORT_CNT] = {&P1IE, &P2IE};
+
+static isr_function isr_functions[IO_INTERRUPT_PORT_CNT][IO_PINS_PER_PORT_CNT] =
+    {[IO_PORT1] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
+     [IO_PORT2] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}};
 typedef enum { HW_TYPE_LAUNCHPAD, HW_TYPE_SUMOBOT } hw_type_enum;
 
 static hw_type_enum io_detect_hw_type(void) {
@@ -214,8 +227,8 @@ void io_set_out(io_signal_enum signal, io_out_enum out) {
 void config_io(io_signal_enum signal, const struct io_config *config) {
     io_set_sel(signal, config->io_sel);
     io_set_dir(signal, config->io_dir);
-    io_set_ren(signal, config->io_ren);
     io_set_out(signal, config->io_out);
+    io_set_ren(signal, config->io_ren);
 }
 
 void io_init(void) {
@@ -247,4 +260,86 @@ bool io_config_compare(const struct io_config *cfg1,
                        const struct io_config *cfg2) {
     return cfg1->io_sel == cfg2->io_sel && cfg1->io_dir == cfg2->io_dir &&
            cfg1->io_ren == cfg2->io_ren && cfg1->io_out == cfg2->io_out;
+}
+
+static void io_clear_interrupt(io_signal_enum signal) {
+    /* Clear interrupt flag */
+    *port_interrupt_flag_regs[calc_io_port(signal)] &= ~calc_io_pin(signal);
+}
+
+/* This function also disables the interrupt because selecting the interrupt
+ * edge can also trigger an interrupt according to the datasheet.
+ */
+static void io_set_interrupt_trigger(io_signal_enum signal,
+                                     io_trigger_enum trigger) {
+    const uint8_t port = calc_io_port(signal);
+    const uint8_t pin = calc_io_pin(signal);
+    io_disable_interrupt(signal);
+    switch (trigger) {
+    case IO_TRIGGER_RISING:
+        *port_interrupt_edge_select_regs[port] &= ~pin;
+        break;
+    case IO_TRIGGER_FALLING:
+        *port_interrupt_edge_select_regs[port] |= pin;
+        break;
+    }
+    io_clear_interrupt(signal); // Disabling interrupt doesn't prevent interrupt
+                                // flag from getting set
+}
+
+static void io_register_isr(io_signal_enum signal, isr_function isr) {
+    const uint8_t port = calc_io_port(signal);
+    const uint8_t pin_index = calc_io_pin_index(signal);
+    ASSERT(isr_functions[port][pin_index] == NULL);
+    isr_functions[port][pin_index] = isr;
+}
+
+void io_configure_interrupt(io_signal_enum signal, io_trigger_enum trigger,
+                            isr_function isr) {
+    io_set_interrupt_trigger(signal, trigger);
+    io_register_isr(signal, isr);
+}
+
+static inline void io_unregister_isr(io_signal_enum signal) {
+    const uint8_t port = calc_io_port(signal);
+    const uint8_t pin_index = calc_io_pin_index(signal);
+    isr_functions[port][pin_index] = NULL;
+}
+
+void io_deconfigure_interrupt(io_signal_enum signal) {
+    io_unregister_isr(signal);
+    io_disable_interrupt(signal);
+}
+
+void io_enable_interrupt(io_signal_enum signal) {
+    *port_interrupt_enable_regs[calc_io_port(signal)] |= calc_io_pin(signal);
+}
+
+void io_disable_interrupt(io_signal_enum signal) {
+    *port_interrupt_enable_regs[calc_io_port(signal)] &= ~calc_io_pin(signal);
+}
+
+static void io_isr(io_signal_enum io) {
+    const uint8_t port = calc_io_port(io);
+    const uint8_t pin_index = calc_io_pin_index(io);
+    const uint8_t pin = calc_io_pin(io);
+    if (*port_interrupt_flag_regs[port] & pin) {
+        if (isr_functions[port][pin_index] != NULL) {
+            isr_functions[port][pin_index]();
+        } else
+            ASSERT(isr_functions[port][pin_index] == NULL)
+    }
+    io_clear_interrupt(io); // Clear interrupt flag performing ISR action
+}
+
+INTERRUPT_FUNCTION(PORT1_VECTOR) isr_port_1(void) {
+    for (io_generic_enum io = IO_10; io <= IO_17; io++) {
+        io_isr(io);
+    }
+}
+
+INTERRUPT_FUNCTION(PORT2_VECTOR) isr_port_2(void) {
+    for (io_generic_enum io = IO_20; io <= IO_27; io++) {
+        io_isr(io);
+    }
 }
