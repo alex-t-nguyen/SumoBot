@@ -348,6 +348,8 @@ typedef enum {
 #endif
 } io_signal_enum;
 
+typedef enum { IO_TRIGGER_RISING, IO_TRIGGER_FALLING } io_trigger_enum;
+
 void io_set_sel(io_signal_enum pin, io_sel_enum select);
 void io_set_dir(io_signal_enum pin, io_dir_enum dir);
 void io_set_ren(io_signal_enum pin, io_ren_enum enable);
@@ -357,3 +359,10 @@ void io_init(void);
 void io_get_current_config(io_signal_enum pin, struct io_config *config);
 bool io_config_compare(const struct io_config *cfg1,
                        const struct io_config *cfg2);
+
+typedef void (*isr_function)(void);
+void io_configure_interrupt(io_signal_enum pin, io_trigger_enum trigger,
+                            isr_function isr);
+void io_deconfigure_interrupt(io_signal_enum pin);
+void io_enable_interrupt(io_signal_enum pin);
+void io_disable_interrupt(io_signal_enum pin);

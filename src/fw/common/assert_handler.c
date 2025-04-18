@@ -26,6 +26,6 @@ void assert_handler(void) {
     while (1) {
         P1OUT ^= BIT0;
         //__delay_cycles(250000);
-        BUSY_WAIT_ms(1000)
+        BUSY_WAIT_ms(250) // Blink 2x in 1 second (flash ON 2x in 1 second)
     };
 }

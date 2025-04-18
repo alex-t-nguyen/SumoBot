@@ -105,7 +105,7 @@ MAIN_OBJ_FILES = $(patsubst $(FW_DIR)/%, $(OBJ_DIR)/%, $(MAIN_OBJ_NAMES))
 MCU = msp430f5529
 W_FLAGS = -Wall -Wextra -Werror -Wshadow 
 C_FLAGS = -mmcu=$(MCU) $(W_FLAGS) $(addprefix -I, $(INCLUDE_DIRS)) $(DEFINES) -Og -g -fshort-enums
-LD_FLAGS = -mmcu=$(MCU) $(DEFINES) $(addprefix -L, $(LIB_DIRS))
+LD_FLAGS = -mmcu=$(MCU) $(DEFINES) $(addprefix -L, $(LIB_DIRS)) -Wl,-Map=$(TARGET).map
 ## Flash Flags
 DEVICE = -n $(MCU)
 EXIT_SPECS = -z [VCC, RESET]
