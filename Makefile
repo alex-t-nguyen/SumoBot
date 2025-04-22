@@ -78,7 +78,7 @@ else
 MAIN_SRC_FILE = $(TEST_DIR)/$(TEST).c
 endif
 SRC_FILES_APP = drive.c enemy.c
-SRC_FILES_DRIVERS = io.c led.c mcu_init.c
+SRC_FILES_DRIVERS = io.c led.c mcu_init.c uart.c ring_buffer.c
 SRC_FILES_MOTOR = motors.c
 SRC_FILES_COMMON = assert_handler.c
 SRC_FILES = externals/printf/printf.c \

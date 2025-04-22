@@ -223,8 +223,8 @@ typedef enum {
     LD_BACK_RIGHT = IO_64,  // P6.4
 
     // UART (Programming MCU)
-    UART_TX = IO_33, // P3.3
-    UART_RX = IO_34, // P3.4
+    UART_TX = IO_44, // P4.4
+    UART_RX = IO_45, // P4.5
 
     // Unused IO pins
     IO_UNUSED_11 = IO_11,
@@ -236,13 +236,15 @@ typedef enum {
     IO_UNUSED_30 = IO_30,
     IO_UNUSED_31 = IO_31,
     IO_UNUSED_32 = IO_32,
+    IO_UNUSED_33 = IO_33,
+    IO_UNUSED_34 = IO_34,
     IO_UNUSED_35 = IO_35,
     IO_UNUSED_36 = IO_36,
     // IO_UNUSED_37 = IO_37,
     IO_UNUSED_40 = IO_40,
     IO_UNUSED_43 = IO_43,
-    IO_UNUSED_44 = IO_44,
-    IO_UNUSED_45 = IO_45,
+    // IO_UNUSED_44 = IO_44,
+    // IO_UNUSED_45 = IO_45,
     IO_UNUSED_46 = IO_46,
     IO_UNUSED_47 = IO_47,
     IO_UNUSED_50 = IO_50,
