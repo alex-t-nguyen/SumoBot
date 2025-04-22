@@ -15,5 +15,5 @@ void ring_buffer_push(struct ring_buffer *p_buf, uint8_t c);
 // Accessors
 uint8_t ring_buffer_pop(struct ring_buffer *p_buf);
 uint8_t ring_buffer_peek(struct ring_buffer *p_buf);
-bool ring_buffer_isfull(struct ring_buffer *p_buf);
-bool ring_buffer_isempty(struct ring_buffer *p_buf);
+bool ring_buffer_isfull(const struct ring_buffer *p_buf);
+bool ring_buffer_isempty(const struct ring_buffer *p_buf);
