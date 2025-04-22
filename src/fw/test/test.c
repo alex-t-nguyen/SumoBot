@@ -3,6 +3,7 @@
 #include "drivers/mcu_init.h"
 #include "drivers/led.h"
 #include "drivers/io.h"
+#include "drivers/uart.h"
 #include "common/defines.h"
 #include "common/assert_handler.h"
 
@@ -69,6 +70,47 @@ static void test_io_interrupt(void) {
     io_enable_interrupt(RANGE_INTERRUPT_RIGHT);
     io_enable_interrupt(RANGE_INTERRUPT_LEFT);
     while(1);
+}
+
+SUPPRESS_UNUSED
+static void test_uart_polling(void) {
+    test_setup();
+    uart_init();
+    while(1) {
+        uart_putchar_polling('h');
+        uart_putchar_polling('e');
+        uart_putchar_polling('l');
+        uart_putchar_polling('l');
+        uart_putchar_polling('o');
+        uart_putchar_polling(' '); 
+        uart_putchar_polling('w');
+        uart_putchar_polling('o');
+        uart_putchar_polling('r');
+        uart_putchar_polling('l');
+        uart_putchar_polling('d');
+        uart_putchar_polling('\n');
+        BUSY_WAIT_ms(1000);
+    }
+}
+SUPPRESS_UNUSED
+static void test_uart_interrupt(void) {
+    test_setup();
+    uart_init();
+    while(1) {
+        uart_putchar_interrupt('h');
+        uart_putchar_interrupt('e');
+        uart_putchar_interrupt('l');
+        uart_putchar_interrupt('l');
+        uart_putchar_interrupt('o');
+        uart_putchar_interrupt(' '); 
+        uart_putchar_interrupt('w');
+        uart_putchar_interrupt('o');
+        uart_putchar_interrupt('r');
+        uart_putchar_interrupt('l');
+        uart_putchar_interrupt('d');
+        uart_putchar_interrupt('\n');
+        BUSY_WAIT_ms(500);
+    }
 }
 
 int main() {
