@@ -54,14 +54,14 @@ static void uart_tx_disable_interrupt(void) {
 #endif
 }
 
-static void uart_tx_clear_ifg(void) {
-// Clear UART interrupt flag
-#ifdef LAUNCHPAD
-    UCA1IFG &= ~UCTXIFG;
-#elif SUMOBOT
-    UCA0IFG &= ~UCTXIFG;
-#endif
-}
+// static void uart_tx_clear_ifg(void) {
+//// Clear UART interrupt flag
+//#ifdef LAUNCHPAD
+//    UCA1IFG &= ~UCTXIFG;
+//#elif SUMOBOT
+//    UCA0IFG &= ~UCTXIFG;
+//#endif
+//}
 
 /**
  * Initializes UART registers
@@ -129,10 +129,57 @@ void uart_init(void) {
 
     //        UCA0IE |= UCTXIE; // Enable UART TX interrupt
 #endif
-    uart_tx_clear_ifg();
-    uart_tx_enable_interrupt();
+    // 1. Don't manually clear IFG here because it does not get auto reset by
+    // device even though
+    //    TXBUF is empty after exiting reset mode. If clearing the IFG here, you
+    //    must write something to TXBUF before using the
+    //    uart_polling/interrupt/putchar() functions.
+    // 2. Don't enable interrupts here, otherwise the ISR will be called
+    // immediately after exiting
+    //    reset mode and if the IFG is set, it will trigger UART tx_start().
+    //    Initially the IFG was cleared here to prevent this, but then it did
+    //    not get auto-set again, so the uart_polling() did not work.
+    // 3. Tested uart_polling/interrupt/putchar() with these commented out and
+    // it works still. The ISR is
+    //    enabled when calling the uart_putchar_interrupt() function. The other
+    //    2 functions don't need the ISR. uart_tx_clear_ifg();
+    //    uart_tx_enable_interrupt();
 }
 
+/**
+ * Low-level output function needed to use mpaland printf() function
+ */
+void _putchar(char c) {
+#ifdef LAUNCHPAD
+    // if(!(UCA1IFG & UCTXIFG)) ASSERT(0)
+    while (!(UCA1IFG & UCTXIFG))
+        ; // Wait until interrupt flag for transmit buffer ready is set (means
+          // can accept new data in buffer)
+    UCA1TXBUF = c; // Send character (8 bits) to buffer
+
+    // Some terminals require carriage return ("\r") after line-feed ("\n") for
+    // an actual new line
+    if (c == '\n') {
+        _putchar('\r');
+    }
+#elif SUMOBOT
+    while (!(UCA0IFG & UCTXIFG))
+        ; // Wait until interrupt flag for transmit buffer ready is set (means
+          // can accept new data in buffer)
+    UCA0TXBUF = c; // Send character (8 bits) to buffer
+
+    // Some terminals require carriage return ("\r") after line-feed ("\n") for
+    // an actual new line
+    if (c == '\n') {
+        _putchar('\r');
+    }
+#endif
+}
+
+/**
+ * NOT USED ANYMORE
+ * Replaced by _putchar() for mpaland printf
+ */
 void uart_putchar_polling(char c) {
 #ifdef LAUNCHPAD
     // if(!(UCA1IFG & UCTXIFG)) ASSERT(0)
@@ -160,6 +207,10 @@ void uart_putchar_polling(char c) {
 #endif
 }
 
+/**
+ * NOT USED ANYMORE
+ * Replaced by _putchar() for mpaland printf
+ */
 void uart_putchar_interrupt(char c) {
     while (ring_buffer_isfull(uart_ring_buffer))
         ; // Stay in loop until UART is able to transmit an element

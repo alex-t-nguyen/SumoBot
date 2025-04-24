@@ -6,6 +6,8 @@
 #include "drivers/uart.h"
 #include "common/defines.h"
 #include "common/assert_handler.h"
+#include "common/trace.h"
+#include "externals/printf/printf.h"
 
 SUPPRESS_UNUSED
 static void test_setup(void) {
@@ -73,6 +75,47 @@ static void test_io_interrupt(void) {
 }
 
 SUPPRESS_UNUSED
+static void test_putchar(void) {
+    test_setup();
+    uart_init();
+    while(1) {
+        _putchar('h');
+        _putchar('e');
+        _putchar('l');
+        _putchar('l');
+        _putchar('o');
+        _putchar(' '); 
+        _putchar('w');
+        _putchar('o');
+        _putchar('r');
+        _putchar('l');
+        _putchar('d');
+        _putchar('\n');
+        BUSY_WAIT_ms(1000);
+    }
+}
+
+SUPPRESS_UNUSED
+static void test_printf(void) {
+    test_setup();
+    uart_init();
+    while(1) {
+        printf("Hello World! %d\n", 2025); 
+        BUSY_WAIT_ms(1000);
+    }
+}
+
+SUPPRESS_UNUSED
+static void test_trace(void) {
+    test_setup();
+    trace_init();
+    while(1) {
+        TRACE("Hello World! %d\n", 2025);
+        BUSY_WAIT_ms(1000);
+    }
+}
+
+SUPPRESS_UNUSED
 static void test_uart_polling(void) {
     test_setup();
     uart_init();
@@ -92,6 +135,7 @@ static void test_uart_polling(void) {
         BUSY_WAIT_ms(1000);
     }
 }
+
 SUPPRESS_UNUSED
 static void test_uart_interrupt(void) {
     test_setup();
