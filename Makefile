@@ -32,7 +32,8 @@ endif
 # Defines
 HW_DEFINE = $(addprefix -D, $(HW))
 TEST_DEFINE = $(addprefix -DTEST=, $(TEST))
-DEFINES = $(HW_DEFINE) $(TEST_DEFINE)
+PRINTF_DEFINE = $(addprefix -D, PRINTF_INCLUDE_CONFIG_H)
+DEFINES = $(HW_DEFINE) $(TEST_DEFINE) $(PRINTF_DEFINE)
 
 # Directories
 TOOLS_DIR = ${TOOLS_PATH}
@@ -41,7 +42,7 @@ MSPGCC_BIN_DIR = $(MSPGCC_ROOT_DIR)/bin
 MSPGCC_INCLUDE_DIR = $(MSPGCC_ROOT_DIR)/include
 MSP430_FLASHER_DIR = $(TOOLS_DIR)/MSPFlasher_1.3.20
 
-INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR) $(MSPGCC_BIN_DIR) $(FW_DIR) externals externals/printf
+INCLUDE_DIRS = $(MSPGCC_INCLUDE_DIR) $(MSPGCC_BIN_DIR) $(FW_DIR) .
 LIB_DIRS = $(INCLUDE_DIRS)
 
 BUILD_DIR = build
@@ -55,6 +56,8 @@ TEST_DIR = $(FW_DIR)/test
 DRIVERS_DIR = $(FW_DIR)/drivers
 APP_DIR = $(FW_DIR)/app
 COMMON_DIR = $(FW_DIR)/common
+EXTERNALS_DIR = externals
+PRINTF_DIR = $(EXTERNALS_DIR)/printf
 
 # Toolchain
 CC = $(MSPGCC_BIN_DIR)/msp430-elf-gcc
@@ -80,20 +83,21 @@ endif
 SRC_FILES_APP = drive.c enemy.c
 SRC_FILES_DRIVERS = io.c led.c mcu_init.c uart.c ring_buffer.c
 SRC_FILES_MOTOR = motors.c
-SRC_FILES_COMMON = assert_handler.c
-SRC_FILES = externals/printf/printf.c \
+SRC_FILES_COMMON = assert_handler.c trace.c
+SRC_FILES_PRINTF = printf.c
+SRC_FILES = $(addprefix $(PRINTF_DIR)/, $(SRC_FILES_PRINTF)) \
 			$(addprefix $(APP_DIR)/, $(SRC_FILES_APP)) \
 			$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS)) \
 			$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR)) \
-			$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON))
+			$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON)) \
 
 HEADER_FILES = $(COMMON_DIR)/defines.h \
-	externals/printf/printf.h \
+	$(addprefix $(PRINTF_DIR)/, $(SRC_FILES_PRINTF:.c=.h)) \
 	$(addprefix $(APP_DIR)/, $(SRC_FILES_APP:.c=.h)) \
 	$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS:.c=.h))  \
 	$(addprefix $(TEST_DIR)/, $(SRC_FILES_TEST:.c=.h)) \
 	$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR:.c=.h)) \
-	$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON:.c=.h))
+	$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON:.c=.h)) \
 
 OBJ_NAMES = $(SRC_FILES:.c=.o)
 MAIN_OBJ_NAMES = $(MAIN_SRC_FILE:.c=.o)

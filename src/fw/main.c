@@ -1,7 +1,7 @@
 #include "common/defines.h"
 #include "drivers/io.h"
 #include "drivers/led.h"
-#include "printf.h"
+#include "externals/printf/printf.h"
 #include <msp430.h>
 #include <stdint.h>
 #include "common/assert_handler.h"
