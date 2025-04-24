@@ -89,7 +89,7 @@ SRC_FILES = $(addprefix $(PRINTF_DIR)/, $(SRC_FILES_PRINTF)) \
 			$(addprefix $(APP_DIR)/, $(SRC_FILES_APP)) \
 			$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS)) \
 			$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR)) \
-			$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON))
+			$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON)) \
 
 HEADER_FILES = $(COMMON_DIR)/defines.h \
 	$(addprefix $(PRINTF_DIR)/, $(SRC_FILES_PRINTF:.c=.h)) \
@@ -97,7 +97,7 @@ HEADER_FILES = $(COMMON_DIR)/defines.h \
 	$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS:.c=.h))  \
 	$(addprefix $(TEST_DIR)/, $(SRC_FILES_TEST:.c=.h)) \
 	$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR:.c=.h)) \
-	$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON:.c=.h))
+	$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON:.c=.h)) \
 
 OBJ_NAMES = $(SRC_FILES:.c=.o)
 MAIN_OBJ_NAMES = $(MAIN_SRC_FILE:.c=.o)
