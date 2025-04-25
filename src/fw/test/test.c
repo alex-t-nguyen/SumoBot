@@ -12,6 +12,7 @@
 SUPPRESS_UNUSED
 static void test_setup(void) {
     mcu_init();
+//    BUSY_WAIT_ms(1000)
 }
 
 SUPPRESS_UNUSED

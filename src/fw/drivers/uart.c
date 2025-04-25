@@ -4,9 +4,9 @@
 #include "drivers/io.h"
 #include "drivers/ring_buffer.h"
 #include <assert.h>
-#include <msp430.h>
 #include <stddef.h>
 #include <stdint.h>
+#include <msp430.h>
 
 // UART ring buffer constants
 #define UART_BUFFER_SIZE (16U)
@@ -270,4 +270,17 @@ INTERRUPT_FUNCTION(USCI_A1_VECTOR) uart_tx_isr(void) {
         break;
     }
 #endif
+}
+
+void uart_init_assert(void) {
+    uart_tx_disable_interrupt();
+    uart_init();
+}
+
+void uart_trace_assert(const char* str) {
+    int i = 0;
+    while(str[i] != '\0') {
+        uart_putchar_polling(str[i]);
+        i++;
+    }
 }
