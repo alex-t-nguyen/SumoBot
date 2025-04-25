@@ -68,6 +68,7 @@ MSP430_READ_ELF = $(MSPGCC_BIN_DIR)/msp430-elf-readelf
 CREATE_HEX_OUTFILE = $(MSPGCC_BIN_DIR)/msp430-elf-objcopy
 CPPCHECK = cppcheck
 FORMAT = clang-format-14
+ADDR2LINE = $(MSPGCC_BIN_DIR)/msp430-elf-addr2line 
 
 # Files
 ## Output Files
@@ -85,6 +86,10 @@ SRC_FILES_DRIVERS = io.c led.c mcu_init.c uart.c ring_buffer.c
 SRC_FILES_MOTOR = motors.c
 SRC_FILES_COMMON = assert_handler.c trace.c
 SRC_FILES_PRINTF = printf.c
+
+# Don't include test/test.c in compilation because it has its own main() function
+# and you can only have 1 when compiling. The test.c is compiled separately with build_tests.sh
+# in CI with Github Actions through .github/workflows/ci.yml
 SRC_FILES = $(addprefix $(PRINTF_DIR)/, $(SRC_FILES_PRINTF)) \
 			$(addprefix $(APP_DIR)/, $(SRC_FILES_APP)) \
 			$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS)) \
@@ -95,7 +100,6 @@ HEADER_FILES = $(COMMON_DIR)/defines.h \
 	$(addprefix $(PRINTF_DIR)/, $(SRC_FILES_PRINTF:.c=.h)) \
 	$(addprefix $(APP_DIR)/, $(SRC_FILES_APP:.c=.h)) \
 	$(addprefix $(DRIVERS_DIR)/, $(SRC_FILES_DRIVERS:.c=.h))  \
-	$(addprefix $(TEST_DIR)/, $(SRC_FILES_TEST:.c=.h)) \
 	$(addprefix $(MOTORS_DIR)/, $(SRC_FILES_MOTOR:.c=.h)) \
 	$(addprefix $(COMMON_DIR)/, $(SRC_FILES_COMMON:.c=.h)) \
 
@@ -177,3 +181,6 @@ size: $(TARGET)
 symbols: $(TARGET)
 	# List symbols table sorted by size
 	@$(MSP430_READ_ELF) -s $(TARGET) | sort -n -k3 
+
+addr2line: $(TARGET)
+	@$(ADDR2LINE) -e $(TARGET) $(ADDR)
