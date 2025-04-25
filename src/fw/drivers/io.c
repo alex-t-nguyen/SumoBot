@@ -336,7 +336,7 @@ static void io_set_interrupt_trigger(io_signal_enum signal,
 static void io_register_isr(io_signal_enum signal, isr_function isr) {
     const uint8_t port = calc_io_port(signal);
     const uint8_t pin_index = calc_io_pin_index(signal);
-    ASSERT(isr_functions[port][pin_index] == NULL);
+    ASSERT(!isr_functions[port][pin_index]);
     isr_functions[port][pin_index] = isr;
 }
 
@@ -370,10 +370,10 @@ static void io_isr(io_signal_enum io) {
     const uint8_t pin_index = calc_io_pin_index(io);
     const uint8_t pin = calc_io_pin(io);
     if (*port_interrupt_flag_regs[port] & pin) {
-        if (isr_functions[port][pin_index] != NULL) {
+        if (isr_functions[port][pin_index]) {
             isr_functions[port][pin_index]();
         } else
-            ASSERT(isr_functions[port][pin_index] == NULL)
+            ASSERT(!isr_functions[port][pin_index])
     }
     io_clear_interrupt(io); // Clear interrupt flag performing ISR action
 }
