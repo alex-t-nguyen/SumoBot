@@ -1,4 +1,5 @@
 # Ignore build directory
 build/
 *.o
+Log/
 
