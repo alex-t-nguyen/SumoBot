@@ -9,3 +9,6 @@
 #define CYCLES_PER_MS (CYCLES_16MHZ / 1000U)
 #define ms_TO_CYCLES(ms) (CYCLES_PER_MS * ms)
 #define BUSY_WAIT_ms(ms) __delay_cycles(ms_TO_CYCLES(ms));
+
+#define SMCLK (CYCLES_16MHZ)
+#define TIMER_INPUT_DIVIER_3 (8U)

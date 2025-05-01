@@ -4,9 +4,9 @@
 #include "drivers/io.h"
 #include "drivers/ring_buffer.h"
 #include <assert.h>
+#include <msp430.h>
 #include <stddef.h>
 #include <stdint.h>
-#include <msp430.h>
 
 // UART ring buffer constants
 #define UART_BUFFER_SIZE (16U)
@@ -14,7 +14,6 @@
 static struct ring_buffer *uart_ring_buffer = NULL;
 
 // UART configuration constants
-#define SMCLK (CYCLES_16MHZ)
 #define BRCLK (SMCLK)
 #define UART_BAUDRATE (115200U)
 static_assert(UART_BAUDRATE <= BRCLK / 16.0f,
@@ -277,9 +276,9 @@ void uart_init_assert(void) {
     uart_init();
 }
 
-void uart_trace_assert(const char* str) {
+void uart_trace_assert(const char *str) {
     int i = 0;
-    while(str[i] != '\0') {
+    while (str[i] != '\0') {
         uart_putchar_polling(str[i]);
         i++;
     }

@@ -1,6 +1,6 @@
 #include "assert_handler.h"
-#include "drivers/uart.h"
 #include "common/defines.h"
+#include "drivers/uart.h"
 #include "externals/printf/printf.h"
 #include <msp430.h>
 
@@ -14,20 +14,21 @@
 // Text + Program Counter + Null termination
 #define ASSERT_STRING_MAX_SIZE (15u + 6u + 1u)
 
-/** 
+/**
  * Print trace of where ASSERT was triggered
  */
 void assert_trace(uint16_t program_counter) {
-//    #ifdef LAUNCHPAD
-//        P4SEL |= (BIT4 | BIT5);
-//        P4DIR |= BIT4;
-//        P4DIR &= ~BIT5;
-//    #elif SUMOBOT
-//        P3SEL |= (BIT3 | BIT4);
-//        P3DIR |= BIT3;
-//        P3DIR &= ~BIT4;
-//    #endif
-    uart_init_assert(); // Selecting UART function on pins already handled in mcu_init() via io_init()
+    //    #ifdef LAUNCHPAD
+    //        P4SEL |= (BIT4 | BIT5);
+    //        P4DIR |= BIT4;
+    //        P4DIR &= ~BIT5;
+    //    #elif SUMOBOT
+    //        P3SEL |= (BIT3 | BIT4);
+    //        P3DIR |= BIT3;
+    //        P3DIR &= ~BIT4;
+    //    #endif
+    uart_init_assert(); // Selecting UART function on pins already handled in
+                        // mcu_init() via io_init()
     char assert_str[ASSERT_STRING_MAX_SIZE];
     snprintf(assert_str, sizeof(assert_str), "ASSERT 0x%x\n", program_counter);
     uart_trace_assert(assert_str);
@@ -52,7 +53,7 @@ void assert_blink_led(void) {
 
 void assert_handler(uint16_t program_counter) {
     // TODO: Turn off motors ("safe state")
-    
+
     BREAKPOINT
     assert_trace(program_counter);
     assert_blink_led();

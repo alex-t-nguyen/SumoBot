@@ -1,6 +1,7 @@
 #include "drivers/io.h"
 #include "common/assert_handler.h"
 #include "common/defines.h"
+#include "common/trace.h"
 #include <assert.h>
 #include <msp430.h>
 #include <stddef.h>
@@ -291,15 +292,33 @@ void io_init(void) {
     }
 }
 
+/**
+ * Get the current IO configuration of a given signal/pin
+ * NOTE: IO_SEL can be 0,1, or 2 if the port is Port1 or Port2
+ *       This is accounted for in the function.
+ */
 void io_get_current_config(io_signal_enum signal, struct io_config *config) {
     const uint8_t port = calc_io_port(signal);
     const uint8_t pin = calc_io_pin(signal);
     const uint8_t pin_index = calc_io_pin_index(signal);
-
-    config->io_sel = (io_sel_enum)((*port_sel_regs[port] & pin) >> pin_index);
     config->io_dir = (io_dir_enum)((*port_dir_regs[port] & pin) >> pin_index);
     config->io_ren = (io_ren_enum)((*port_ren_regs[port] & pin) >> pin_index);
     config->io_out = (io_out_enum)((*port_out_regs[port] & pin) >> pin_index);
+    if (port == 0 || port == 1) { // If port == 0 or 1 (corresponds to P1 and P2
+                                  // on MCU), then IO_SEL can be 0/1/2
+        io_sel_enum io_sel_temp;
+        io_sel_temp = (io_sel_enum)((*port_sel_regs[port] & pin) >> pin_index);
+        if (io_sel_temp == 1) {                  // If IO_SEL bit is set to 1
+            if (config->io_dir == 0) {           // If direction is 0
+                config->io_sel = (io_sel_enum)1; // IO_SEL is actually = 1
+            } else if (config->io_dir == 1) {
+                config->io_sel = (io_sel_enum)2; // IO_SEL is actually = 2
+            }
+        }
+    } else { // IO_SEL will only be 0/1
+        config->io_sel =
+            (io_sel_enum)((*port_sel_regs[port] & pin) >> pin_index);
+    }
 }
 
 bool io_config_compare(const struct io_config *cfg1,

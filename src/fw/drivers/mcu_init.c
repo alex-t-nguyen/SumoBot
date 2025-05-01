@@ -40,7 +40,10 @@ static void init_clocks() {
     // Step 4: Wait for the DCO to settle
     // (n × 32 × 32) fFLLREFCLK cycles for the DCO to settle worse case (1 * 32
     // * 32 = 1024)
-    __delay_cycles(50000); // Delay for DCO stabilization (Waiting much longer than 5000 cycles, because need more time for everything to settle in order for UART prints to display correctly)
+    __delay_cycles(
+        100000); // Delay for DCO stabilization (Waiting much longer than 5000
+                 // cycles, because need more time for everything to settle in
+                 // order for UART prints to display correctly)
 
     // Step 5: Select DCO as clock source for MCLK and SCLK, and REFO as clock
     // source for ACLK MUST select REFOCLK for ACLK (SELA) BEFORE clearing
