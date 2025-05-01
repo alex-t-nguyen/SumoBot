@@ -4,6 +4,7 @@
 #include "drivers/led.h"
 #include "drivers/io.h"
 #include "drivers/uart.h"
+#include "drivers/pwm.h"
 #include "common/defines.h"
 #include "common/assert_handler.h"
 #include "common/trace.h"
@@ -18,7 +19,7 @@ static void test_setup(void) {
 SUPPRESS_UNUSED
 static void test_assert(void) {
     test_setup();
-    ASSERT(0)
+    ASSERT(0);
 }
 
 SUPPRESS_UNUSED
@@ -155,6 +156,33 @@ static void test_uart_interrupt(void) {
         uart_putchar_interrupt('d');
         uart_putchar_interrupt('\n');
         BUSY_WAIT_ms(500);
+    }
+}
+
+SUPPRESS_UNUSED
+static void test_pwm(void) {
+    test_setup();
+    trace_init();
+    pwm_init();
+    const uint8_t duty_cycles[6] = {100, 75, 50, 25, 1, 0};
+    const uint16_t wait_time = 3000;
+    while(1) {
+        for(uint8_t i = 0; i < ARRAY_SIZE(duty_cycles); i++) {
+            TRACE("Set duty cycle for IN1 to %d for %d ms", duty_cycles[i], wait_time);
+            pwm_set_duty_cycle(DRV8848_RIGHT1, duty_cycles[i]);
+            pwm_set_duty_cycle(DRV8848_RIGHT2, 0);
+            pwm_set_duty_cycle(DRV8848_LEFT1, duty_cycles[i]);
+            pwm_set_duty_cycle(DRV8848_LEFT2, 0);
+            BUSY_WAIT_ms(wait_time);
+        }
+        for(uint8_t i = 0; i < ARRAY_SIZE(duty_cycles); i++) {
+            TRACE("Set duty cycle for IN2 to %d for %d ms", duty_cycles[i], wait_time);
+            pwm_set_duty_cycle(DRV8848_RIGHT1, 0);
+            pwm_set_duty_cycle(DRV8848_RIGHT2, duty_cycles[i]); 
+            pwm_set_duty_cycle(DRV8848_LEFT1, 0);
+            pwm_set_duty_cycle(DRV8848_LEFT2, duty_cycles[i]);
+            BUSY_WAIT_ms(wait_time);
+        }
     }
 }
 
