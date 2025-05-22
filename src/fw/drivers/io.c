@@ -99,6 +99,8 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
                          IO_OUT_LOW},
     [MOTOR_LEFT_IN1] = {IO_SEL_ALT2, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
     [MOTOR_LEFT_IN2] = {IO_SEL_ALT2, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
+    [MOTOR_ENABLE] = {IO_SEL_GPIO, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
+    [MOTOR_NFAULT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE, IO_OUT_HIGH},
 
     // Laster Range Sensor pins
     [XSHUT_RIGHT] = {IO_SEL_GPIO, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
@@ -163,12 +165,12 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
     [IO_UNUSED_71] = IO_UNUSED_CONFIG,
     [IO_UNUSED_72] = IO_UNUSED_CONFIG,
     [IO_UNUSED_73] = IO_UNUSED_CONFIG,
-    [IO_UNUSED_74] = IO_UNUSED_CONFIG,
+    //[IO_UNUSED_74] = IO_UNUSED_CONFIG,
     [IO_UNUSED_75] = IO_UNUSED_CONFIG,
     [IO_UNUSED_76] = IO_UNUSED_CONFIG,
     [IO_UNUSED_77] = IO_UNUSED_CONFIG,
     [IO_UNUSED_80] = IO_UNUSED_CONFIG,
-    [IO_UNUSED_82] = IO_UNUSED_CONFIG
+    //[IO_UNUSED_82] = IO_UNUSED_CONFIG
 #elif SUMOBOT
     // Unused IO Pins
     [IO_UNUSED_11] = IO_UNUSED_CONFIG,
@@ -205,12 +207,12 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
     [IO_UNUSED_71] = IO_UNUSED_CONFIG,
     [IO_UNUSED_72] = IO_UNUSED_CONFIG,
     [IO_UNUSED_73] = IO_UNUSED_CONFIG,
-    [IO_UNUSED_74] = IO_UNUSED_CONFIG,
+    //[IO_UNUSED_74] = IO_UNUSED_CONFIG,
     [IO_UNUSED_75] = IO_UNUSED_CONFIG,
     [IO_UNUSED_76] = IO_UNUSED_CONFIG,
     [IO_UNUSED_77] = IO_UNUSED_CONFIG,
     [IO_UNUSED_80] = IO_UNUSED_CONFIG,
-    [IO_UNUSED_82] = IO_UNUSED_CONFIG
+    //[IO_UNUSED_82] = IO_UNUSED_CONFIG
 #endif
 };
 
@@ -314,6 +316,9 @@ void io_get_current_config(io_signal_enum signal, struct io_config *config) {
             } else if (config->io_dir == 1) {
                 config->io_sel = (io_sel_enum)2; // IO_SEL is actually = 2
             }
+        }
+        else { // Set IO_SEL = 0
+            config->io_sel = (io_sel_enum)0;
         }
     } else { // IO_SEL will only be 0/1
         config->io_sel =

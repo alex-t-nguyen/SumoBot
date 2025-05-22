@@ -5,6 +5,7 @@
 #include "drivers/io.h"
 #include "drivers/uart.h"
 #include "drivers/pwm.h"
+#include "drivers/drv8848.h"
 #include "common/defines.h"
 #include "common/assert_handler.h"
 #include "common/trace.h"
@@ -182,6 +183,27 @@ static void test_pwm(void) {
             pwm_set_duty_cycle(DRV8848_LEFT1, 0);
             pwm_set_duty_cycle(DRV8848_LEFT2, duty_cycles[i]);
             BUSY_WAIT_ms(wait_time);
+        }
+    }
+}
+
+SUPPRESS_UNUSED
+static void test_drv8848(void) {
+    test_setup();
+    trace_init();
+    drv8848_init();
+    const uint8_t duty_cycles[6] = {100, 75, 50, 25, 1, 0};
+    const drv8848_mode_enum drv8848_modes[4] = {DRV8848_MODE_FORWARD, DRV8848_MODE_COAST, DRV8848_MODE_REVERSE, DRV8848_MODE_STOP};
+    const char* drv8848_mode_names[4] = {"COAST", "FORWARD", "REVERSE", "BRAKE"};
+    const uint16_t wait_time = 3000;
+    while(1) {
+        for(uint8_t i = 0; i < ARRAY_SIZE(drv8848_modes); i++) {
+            for(uint8_t j = 0; j < ARRAY_SIZE(duty_cycles); j++) {
+                TRACE("Set drv8848 mode to %s with duty cycle %d", drv8848_mode_names[drv8848_modes[i]], duty_cycles[j]);
+                drv8848_set_mode(MOTORS_RIGHT, drv8848_modes[i], duty_cycles[j]);
+                drv8848_set_mode(MOTORS_LEFT, drv8848_modes[i], duty_cycles[j]);
+                BUSY_WAIT_ms(wait_time);
+            }
         }
     }
 }
