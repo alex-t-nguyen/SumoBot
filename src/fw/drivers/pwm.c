@@ -28,10 +28,10 @@ struct pwm_channel_cfg {
 };
 
 static struct pwm_channel_cfg pwm_cfgs[] = {
-    [MOTOR_RIGHT_IN1] = {.enable = false, .cctl = &TA2CCTL2, .ccr = &TA2CCR2},
-    [MOTOR_RIGHT_IN2] = {.enable = false, .cctl = &TA2CCTL1, .ccr = &TA2CCR1},
-    [MOTOR_LEFT_IN1] = {.enable = false, .cctl = &TA0CCTL4, .ccr = &TA0CCR4},
-    [MOTOR_LEFT_IN2] = {.enable = false, .cctl = &TA0CCTL3, .ccr = &TA0CCR3}};
+    [PWM_DRV8848_RIGHT1] = {.enable = false, .cctl = &TA2CCTL2, .ccr = &TA2CCR2},
+    [PWM_DRV8848_RIGHT2] = {.enable = false, .cctl = &TA2CCTL1, .ccr = &TA2CCR1},
+    [PWM_DRV8848_LEFT1] = {.enable = false, .cctl = &TA0CCTL4, .ccr = &TA0CCR4},
+    [PWM_DRV8848_LEFT2] = {.enable = false, .cctl = &TA0CCTL3, .ccr = &TA0CCR3}};
 
 /**
  * Initialize PWM timer registers
@@ -89,8 +89,8 @@ static void pwm_enable(bool enable) {
      * MC_0: Timer is halted
      * MC_1: Up mode (Count up to TAxCCR0)
      */
-    TA0CTL = (enable ? MC_1 : MC_0) + TACLR;
-    TA2CTL = (enable ? MC_1 : MC_0) + TACLR;
+    TA0CTL |= (enable ? MC_1 : MC_0) + TACLR;
+    TA2CTL |= (enable ? MC_1 : MC_0) + TACLR;
 }
 
 /**

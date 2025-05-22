@@ -202,6 +202,8 @@ typedef enum {
     MOTOR_RIGHT_IN2 = IO_24, // P2.4
     MOTOR_LEFT_IN1 = IO_15,  // P1.5
     MOTOR_LEFT_IN2 = IO_14,  // P1.4
+    MOTOR_ENABLE = IO_82,    // P8.2
+    MOTOR_NFAULT = IO_74,    // P7.4
 
     // Laser Range Sensor pins
     //-- Reset pins
@@ -263,12 +265,12 @@ typedef enum {
     IO_UNUSED_71 = IO_71,
     IO_UNUSED_72 = IO_72,
     IO_UNUSED_73 = IO_73,
-    IO_UNUSED_74 = IO_74,
+    //IO_UNUSED_74 = IO_74,
     IO_UNUSED_75 = IO_75,
     IO_UNUSED_76 = IO_76,
     IO_UNUSED_77 = IO_77,
     IO_UNUSED_80 = IO_80,
-    IO_UNUSED_82 = IO_82
+    //IO_UNUSED_82 = IO_82
 #elif SUMOBOT // Actual sumo bot
     // Detect HW Type pin
     DETECT_HW_TYPE_PIN = IO_37,
@@ -281,6 +283,8 @@ typedef enum {
     MOTOR_RIGHT_IN2 = IO_24, // P2.4
     MOTOR_LEFT_IN1 = IO_15,  // P1.5
     MOTOR_LEFT_IN2 = IO_14,  // P1.4
+    MOTOR_ENABLE = IO_82,    // P8.2
+    MOTOR_NFAULT = IO_74,    // P7.4
 
     // Laser Range Sensor pins
     //-- Reset pins
@@ -340,12 +344,12 @@ typedef enum {
     IO_UNUSED_71 = IO_71,
     IO_UNUSED_72 = IO_72,
     IO_UNUSED_73 = IO_73,
-    IO_UNUSED_74 = IO_74,
+    //IO_UNUSED_74 = IO_74,
     IO_UNUSED_75 = IO_75,
     IO_UNUSED_76 = IO_76,
     IO_UNUSED_77 = IO_77,
     IO_UNUSED_80 = IO_80,
-    IO_UNUSED_82 = IO_82
+    //IO_UNUSED_82 = IO_82
 
 #endif
 } io_signal_enum;

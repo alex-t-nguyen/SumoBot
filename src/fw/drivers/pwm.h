@@ -2,10 +2,10 @@
 
 // Driver that emulates hardware PWM with timers
 typedef enum {
-    DRV8848_RIGHT1,
-    DRV8848_RIGHT2,
-    DRV8848_LEFT1,
-    DRV8848_LEFT2
+    PWM_DRV8848_RIGHT1,
+    PWM_DRV8848_RIGHT2,
+    PWM_DRV8848_LEFT1,
+    PWM_DRV8848_LEFT2
 } mdrv_enum;
 
 void pwm_init(void);
