@@ -425,5 +425,5 @@ bool io_read_input(io_signal_enum io) {
     uint8_t pin_idx = calc_io_pin_index(io);
 
     TRACE("Reading input pin P%d.%d...", port, pin);
-    return (*port_in_regs[port] & pin) >> pin_idx? true : false;
+    return ((*port_in_regs[port] & pin) >> pin_idx) ? true : false;
 }
