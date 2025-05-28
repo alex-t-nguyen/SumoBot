@@ -203,7 +203,8 @@ typedef enum {
     MOTOR_LEFT_IN1 = IO_15,  // P1.5
     MOTOR_LEFT_IN2 = IO_14,  // P1.4
     MOTOR_ENABLE = IO_82,    // P8.2
-    MOTOR_NFAULT = IO_74,    // P7.4
+    MOTOR_RIGHT_NFAULT = IO_74, // P7.4
+    MOTOR_LEFT_NFAULT = IO_43,  // P4.3
 
     // Laser Range Sensor pins
     //-- Reset pins
@@ -244,7 +245,7 @@ typedef enum {
     IO_UNUSED_36 = IO_36,
     // IO_UNUSED_37 = IO_37,
     IO_UNUSED_40 = IO_40,
-    IO_UNUSED_43 = IO_43,
+    //IO_UNUSED_43 = IO_43,
     // IO_UNUSED_44 = IO_44,
     // IO_UNUSED_45 = IO_45,
     IO_UNUSED_46 = IO_46,
@@ -284,8 +285,9 @@ typedef enum {
     MOTOR_LEFT_IN1 = IO_15,  // P1.5
     MOTOR_LEFT_IN2 = IO_14,  // P1.4
     MOTOR_ENABLE = IO_82,    // P8.2
-    MOTOR_NFAULT = IO_74,    // P7.4
-
+    MOTOR_RIGHT_NFAULT = IO_74, // P7.4
+    MOTOR_LEFT_NFAULT = IO_43,  // P4.3
+                                //
     // Laser Range Sensor pins
     //-- Reset pins
     XSHUT_RIGHT = IO_23,  // P2.3
@@ -323,7 +325,7 @@ typedef enum {
     IO_UNUSED_36 = IO_36,
     // IO_UNUSED_37 = IO_37,
     IO_UNUSED_40 = IO_40,
-    IO_UNUSED_43 = IO_43,
+    //IO_UNUSED_43 = IO_43,
     IO_UNUSED_44 = IO_44,
     IO_UNUSED_45 = IO_45,
     IO_UNUSED_46 = IO_46,
@@ -372,3 +374,4 @@ void io_configure_interrupt(io_signal_enum pin, io_trigger_enum trigger,
 void io_deconfigure_interrupt(io_signal_enum pin);
 void io_enable_interrupt(io_signal_enum pin);
 void io_disable_interrupt(io_signal_enum pin);
+bool io_read_input(io_signal_enum pin);
