@@ -100,7 +100,8 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
     [MOTOR_LEFT_IN1] = {IO_SEL_ALT2, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
     [MOTOR_LEFT_IN2] = {IO_SEL_ALT2, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
     [MOTOR_ENABLE] = {IO_SEL_GPIO, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
-    [MOTOR_NFAULT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE, IO_OUT_HIGH},
+    [MOTOR_RIGHT_NFAULT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE, IO_OUT_HIGH},
+    [MOTOR_LEFT_NFAULT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE, IO_OUT_HIGH},
 
     // Laster Range Sensor pins
     [XSHUT_RIGHT] = {IO_SEL_GPIO, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
@@ -144,7 +145,7 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
     [IO_UNUSED_36] = IO_UNUSED_CONFIG,
     //[IO_UNUSED_37] = IO_UNUSED_CONFIG,
     [IO_UNUSED_40] = IO_UNUSED_CONFIG,
-    [IO_UNUSED_43] = IO_UNUSED_CONFIG,
+    //[IO_UNUSED_43] = IO_UNUSED_CONFIG,
     //[IO_UNUSED_44] = IO_UNUSED_CONFIG,
     //[IO_UNUSED_45] = IO_UNUSED_CONFIG,
     [IO_UNUSED_46] = IO_UNUSED_CONFIG,
@@ -186,7 +187,7 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
     [IO_UNUSED_36] = IO_UNUSED_CONFIG,
     //[IO_UNUSED_37] = IO_UNUSED_CONFIG,
     [IO_UNUSED_40] = IO_UNUSED_CONFIG,
-    [IO_UNUSED_43] = IO_UNUSED_CONFIG,
+    //[IO_UNUSED_43] = IO_UNUSED_CONFIG,
     [IO_UNUSED_44] = IO_UNUSED_CONFIG,
     [IO_UNUSED_45] = IO_UNUSED_CONFIG,
     [IO_UNUSED_46] = IO_UNUSED_CONFIG,
@@ -412,4 +413,17 @@ INTERRUPT_FUNCTION(PORT2_VECTOR) isr_port_2(void) {
     for (io_generic_enum io = IO_20; io <= IO_27; io++) {
         io_isr(io);
     }
+}
+
+/**
+ * Reads value of io pin
+ * Pin must be an input
+ */
+bool io_read_input(io_signal_enum io) {
+    uint8_t port = calc_io_port(io);
+    uint8_t pin = calc_io_pin(io);
+    uint8_t pin_idx = calc_io_pin_index(io);
+
+    TRACE("Reading input pin P%d.%d...", port, pin);
+    return (*port_in_regs[port] & pin) >> pin_idx? true : false;
 }
