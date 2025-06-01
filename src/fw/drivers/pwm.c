@@ -28,10 +28,15 @@ struct pwm_channel_cfg {
 };
 
 static struct pwm_channel_cfg pwm_cfgs[] = {
-    [PWM_DRV8848_RIGHT1] = {.enable = false, .cctl = &TA2CCTL2, .ccr = &TA2CCR2},
-    [PWM_DRV8848_RIGHT2] = {.enable = false, .cctl = &TA2CCTL1, .ccr = &TA2CCR1},
+    [PWM_DRV8848_RIGHT1] = {.enable = false,
+                            .cctl = &TA2CCTL2,
+                            .ccr = &TA2CCR2},
+    [PWM_DRV8848_RIGHT2] = {.enable = false,
+                            .cctl = &TA2CCTL1,
+                            .ccr = &TA2CCR1},
     [PWM_DRV8848_LEFT1] = {.enable = false, .cctl = &TA0CCTL4, .ccr = &TA0CCR4},
-    [PWM_DRV8848_LEFT2] = {.enable = false, .cctl = &TA0CCTL3, .ccr = &TA0CCR3}};
+    [PWM_DRV8848_LEFT2] = {
+        .enable = false, .cctl = &TA0CCTL3, .ccr = &TA0CCR3}};
 
 /**
  * Initialize PWM timer registers

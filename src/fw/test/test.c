@@ -6,6 +6,7 @@
 #include "drivers/uart.h"
 #include "drivers/pwm.h"
 #include "drivers/drv8848.h"
+#include "drivers/adc.h"
 #include "common/defines.h"
 #include "common/assert_handler.h"
 #include "common/trace.h"
@@ -205,6 +206,22 @@ static void test_drv8848(void) {
                 BUSY_WAIT_ms(wait_time);
             }
         }
+    }
+}
+
+SUPPRESS_UNUSED
+static void test_adc(void) {
+    test_setup();
+    trace_init();
+    adc_init();
+    const uint16_t wait_time = 1000;
+    while(1) {
+        adc_channel_values_t adc_values;
+        adc_get_channel_values(adc_values);
+        for(uint8_t i = 0; i < ADC_CHANNEL_COUNT; i++) {
+            TRACE("ADC Channel %u = %u", i, adc_values[i]);
+            BUSY_WAIT_ms(wait_time);
+        }        
     }
 }
 
