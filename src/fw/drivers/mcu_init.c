@@ -45,13 +45,13 @@ static void init_clocks() {
                  // cycles, because need more time for everything to settle in
                  // order for UART prints to display correctly)
 
-    // Step 5: Select DCO as clock source for MCLK and SCLK, and REFO as clock
-    // source for ACLK MUST select REFOCLK for ACLK (SELA) BEFORE clearing
+    // Step 5: Select DCO as clock source for MCLK and SCLK, and VLO as clock
+    // source for ACLK MUST select VLOCLK for ACLK (SELA) BEFORE clearing
     // XT1CLK fault flag because the default for it is XT1CLK and it will
     // continuously set XT1 fault flag if XT1 is not enabled and present on
     // device
     UCSCTL4 = SELM__DCOCLK + SELS__DCOCLK +
-              SELA__REFOCLK; // MCLK & SMCLK = DCO, ACLK = REFO
+              SELA__VLOCLK; // MCLK & SMCLK = DCO, ACLK = REFO
 
     // Step 6: Clear oscillator fault flags
     do {

@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <stdint.h>
 
 /* IO pin handling, including pinmapping, initialization, and configurations
  * This wraps the register defines provided in the headers from Texas
@@ -198,11 +199,11 @@ typedef enum {
 
     // Motor pins (IN1 -> AIN1 and BIN1, IN2 -> AIN2 and BIN2) (Motors on same
     // sides will share same PWM input signal)
-    MOTOR_RIGHT_IN1 = IO_25, // P2.5
-    MOTOR_RIGHT_IN2 = IO_24, // P2.4
-    MOTOR_LEFT_IN1 = IO_15,  // P1.5
-    MOTOR_LEFT_IN2 = IO_14,  // P1.4
-    MOTOR_ENABLE = IO_82,    // P8.2
+    MOTOR_RIGHT_IN1 = IO_25,    // P2.5
+    MOTOR_RIGHT_IN2 = IO_24,    // P2.4
+    MOTOR_LEFT_IN1 = IO_15,     // P1.5
+    MOTOR_LEFT_IN2 = IO_14,     // P1.4
+    MOTOR_ENABLE = IO_82,       // P8.2
     MOTOR_RIGHT_NFAULT = IO_74, // P7.4
     MOTOR_LEFT_NFAULT = IO_43,  // P4.3
 
@@ -245,7 +246,7 @@ typedef enum {
     IO_UNUSED_36 = IO_36,
     // IO_UNUSED_37 = IO_37,
     IO_UNUSED_40 = IO_40,
-    //IO_UNUSED_43 = IO_43,
+    // IO_UNUSED_43 = IO_43,
     // IO_UNUSED_44 = IO_44,
     // IO_UNUSED_45 = IO_45,
     IO_UNUSED_46 = IO_46,
@@ -266,12 +267,12 @@ typedef enum {
     IO_UNUSED_71 = IO_71,
     IO_UNUSED_72 = IO_72,
     IO_UNUSED_73 = IO_73,
-    //IO_UNUSED_74 = IO_74,
+    // IO_UNUSED_74 = IO_74,
     IO_UNUSED_75 = IO_75,
     IO_UNUSED_76 = IO_76,
     IO_UNUSED_77 = IO_77,
     IO_UNUSED_80 = IO_80,
-    //IO_UNUSED_82 = IO_82
+// IO_UNUSED_82 = IO_82
 #elif SUMOBOT // Actual sumo bot
     // Detect HW Type pin
     DETECT_HW_TYPE_PIN = IO_37,
@@ -280,11 +281,11 @@ typedef enum {
     IO_TEST_LED = IO_10,
     // Motor pins (IN1 -> AIN1 and BIN1, IN2 -> AIN2 and BIN2) (Motors on same
     // sides will share same PWM input signal)
-    MOTOR_RIGHT_IN1 = IO_25, // P2.5
-    MOTOR_RIGHT_IN2 = IO_24, // P2.4
-    MOTOR_LEFT_IN1 = IO_15,  // P1.5
-    MOTOR_LEFT_IN2 = IO_14,  // P1.4
-    MOTOR_ENABLE = IO_82,    // P8.2
+    MOTOR_RIGHT_IN1 = IO_25,    // P2.5
+    MOTOR_RIGHT_IN2 = IO_24,    // P2.4
+    MOTOR_LEFT_IN1 = IO_15,     // P1.5
+    MOTOR_LEFT_IN2 = IO_14,     // P1.4
+    MOTOR_ENABLE = IO_82,       // P8.2
     MOTOR_RIGHT_NFAULT = IO_74, // P7.4
     MOTOR_LEFT_NFAULT = IO_43,  // P4.3
                                 //
@@ -325,7 +326,7 @@ typedef enum {
     IO_UNUSED_36 = IO_36,
     // IO_UNUSED_37 = IO_37,
     IO_UNUSED_40 = IO_40,
-    //IO_UNUSED_43 = IO_43,
+    // IO_UNUSED_43 = IO_43,
     IO_UNUSED_44 = IO_44,
     IO_UNUSED_45 = IO_45,
     IO_UNUSED_46 = IO_46,
@@ -346,12 +347,12 @@ typedef enum {
     IO_UNUSED_71 = IO_71,
     IO_UNUSED_72 = IO_72,
     IO_UNUSED_73 = IO_73,
-    //IO_UNUSED_74 = IO_74,
+    // IO_UNUSED_74 = IO_74,
     IO_UNUSED_75 = IO_75,
     IO_UNUSED_76 = IO_76,
     IO_UNUSED_77 = IO_77,
     IO_UNUSED_80 = IO_80,
-    //IO_UNUSED_82 = IO_82
+// IO_UNUSED_82 = IO_82
 
 #endif
 } io_signal_enum;
@@ -375,3 +376,5 @@ void io_deconfigure_interrupt(io_signal_enum pin);
 void io_enable_interrupt(io_signal_enum pin);
 void io_disable_interrupt(io_signal_enum pin);
 bool io_read_input(io_signal_enum pin);
+const io_signal_enum *get_io_adc_pins(uint8_t *cnt);
+uint8_t io_to_adc_idx(io_signal_enum pin);

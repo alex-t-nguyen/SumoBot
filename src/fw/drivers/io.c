@@ -36,7 +36,16 @@ static inline uint8_t calc_io_pin(io_signal_enum signal) {
     return 1 << calc_io_pin_index(signal);
 }
 
-typedef enum { IO_PORT1, IO_PORT2 } io_port_enum;
+typedef enum {
+    IO_PORT1,
+    IO_PORT2,
+    IO_PORT3,
+    IO_PORT4,
+    IO_PORT5,
+    IO_PORT6,
+    IO_PORT7,
+    IO_PORT8
+} io_port_enum;
 
 // Store address of memory-mapped registers to be accessed via array
 // If you were to store the value P1DIR, it would no longer be memory mapped
@@ -64,6 +73,10 @@ static volatile uint8_t
 static isr_function isr_functions[IO_INTERRUPT_PORT_CNT][IO_PINS_PER_PORT_CNT] =
     {[IO_PORT1] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL},
      [IO_PORT2] = {NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL}};
+
+static const io_signal_enum io_adc_pins_arr[] = {LD_FRONT_LEFT, LD_FRONT_RIGHT,
+                                                 LD_BACK_LEFT, LD_BACK_RIGHT};
+
 typedef enum { HW_TYPE_LAUNCHPAD, HW_TYPE_SUMOBOT } hw_type_enum;
 
 static hw_type_enum io_detect_hw_type(void) {
@@ -100,8 +113,10 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
     [MOTOR_LEFT_IN1] = {IO_SEL_ALT2, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
     [MOTOR_LEFT_IN2] = {IO_SEL_ALT2, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
     [MOTOR_ENABLE] = {IO_SEL_GPIO, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
-    [MOTOR_RIGHT_NFAULT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE, IO_OUT_HIGH},
-    [MOTOR_LEFT_NFAULT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE, IO_OUT_HIGH},
+    [MOTOR_RIGHT_NFAULT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE,
+                            IO_OUT_HIGH},
+    [MOTOR_LEFT_NFAULT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE,
+                           IO_OUT_HIGH},
 
     // Laster Range Sensor pins
     [XSHUT_RIGHT] = {IO_SEL_GPIO, IO_DIR_OUTPUT, IO_REN_DISABLE, IO_OUT_LOW},
@@ -171,7 +186,7 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
     [IO_UNUSED_76] = IO_UNUSED_CONFIG,
     [IO_UNUSED_77] = IO_UNUSED_CONFIG,
     [IO_UNUSED_80] = IO_UNUSED_CONFIG,
-    //[IO_UNUSED_82] = IO_UNUSED_CONFIG
+//[IO_UNUSED_82] = IO_UNUSED_CONFIG
 #elif SUMOBOT
     // Unused IO Pins
     [IO_UNUSED_11] = IO_UNUSED_CONFIG,
@@ -213,7 +228,7 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
     [IO_UNUSED_76] = IO_UNUSED_CONFIG,
     [IO_UNUSED_77] = IO_UNUSED_CONFIG,
     [IO_UNUSED_80] = IO_UNUSED_CONFIG,
-    //[IO_UNUSED_82] = IO_UNUSED_CONFIG
+//[IO_UNUSED_82] = IO_UNUSED_CONFIG
 #endif
 };
 
@@ -317,8 +332,7 @@ void io_get_current_config(io_signal_enum signal, struct io_config *config) {
             } else if (config->io_dir == 1) {
                 config->io_sel = (io_sel_enum)2; // IO_SEL is actually = 2
             }
-        }
-        else { // Set IO_SEL = 0
+        } else { // Set IO_SEL = 0
             config->io_sel = (io_sel_enum)0;
         }
     } else { // IO_SEL will only be 0/1
@@ -403,18 +417,6 @@ static void io_isr(io_signal_enum io) {
     io_clear_interrupt(io); // Clear interrupt flag performing ISR action
 }
 
-INTERRUPT_FUNCTION(PORT1_VECTOR) isr_port_1(void) {
-    for (io_generic_enum io = IO_10; io <= IO_17; io++) {
-        io_isr(io);
-    }
-}
-
-INTERRUPT_FUNCTION(PORT2_VECTOR) isr_port_2(void) {
-    for (io_generic_enum io = IO_20; io <= IO_27; io++) {
-        io_isr(io);
-    }
-}
-
 /**
  * Reads value of io pin
  * Pin must be an input
@@ -426,4 +428,33 @@ bool io_read_input(io_signal_enum io) {
 
     TRACE("Reading input pin P%d.%d...", port, pin);
     return ((*port_in_regs[port] & pin) >> pin_idx) ? true : false;
+}
+
+/**
+ * Returns array of adc pins
+ * Sets cnt variable to size of array (pass by reference)
+ */
+const io_signal_enum *get_io_adc_pins(uint8_t *cnt) {
+    *cnt = ARRAY_SIZE(io_adc_pins_arr);
+    return io_adc_pins_arr;
+}
+
+/**
+ * Returns the index of the adc IO pin
+ */
+uint8_t io_to_adc_idx(io_signal_enum io) {
+    ASSERT((calc_io_port(io) == IO_PORT6) || (calc_io_port(io) == IO_PORT7));
+    return calc_io_pin_index(io);
+}
+
+INTERRUPT_FUNCTION(PORT1_VECTOR) isr_port_1(void) {
+    for (io_generic_enum io = IO_10; io <= IO_17; io++) {
+        io_isr(io);
+    }
+}
+
+INTERRUPT_FUNCTION(PORT2_VECTOR) isr_port_2(void) {
+    for (io_generic_enum io = IO_20; io <= IO_27; io++) {
+        io_isr(io);
+    }
 }
