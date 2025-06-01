@@ -7,6 +7,7 @@
 #include "drivers/pwm.h"
 #include "drivers/drv8848.h"
 #include "drivers/adc.h"
+#include "drivers/qre1113.h"
 #include "common/defines.h"
 #include "common/assert_handler.h"
 #include "common/trace.h"
@@ -222,6 +223,24 @@ static void test_adc(void) {
             TRACE("ADC Channel %u = %u", i, adc_values[i]);
             BUSY_WAIT_ms(wait_time);
         }        
+    }
+}
+
+SUPPRESS_UNUSED
+static void test_qre1113(void) {
+    test_setup();
+    trace_init();
+    adc_init();
+    //qre1113_init();
+    const uint16_t wait_time = 1000;
+    struct qre1113_voltages voltages_val_buffer = {0,0,0,0};
+    while(1) {
+        qre1113_get_voltages(&voltages_val_buffer);
+        TRACE("Voltage front left = %u", voltages_val_buffer.front_left);
+        TRACE("Voltage front right = %u", voltages_val_buffer.front_right);
+        TRACE("Voltage back left = %u", voltages_val_buffer.back_left);
+        TRACE("Voltage back right = %u\n", voltages_val_buffer.back_right);
+        BUSY_WAIT_ms(wait_time);
     }
 }
 
