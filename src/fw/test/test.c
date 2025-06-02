@@ -1,5 +1,6 @@
 #include <msp430.h>
 #include <stdint.h>
+#include "app/line.h"
 #include "drivers/mcu_init.h"
 #include "drivers/led.h"
 #include "drivers/io.h"
@@ -230,8 +231,7 @@ SUPPRESS_UNUSED
 static void test_qre1113(void) {
     test_setup();
     trace_init();
-    adc_init();
-    //qre1113_init();
+    qre1113_init();
     const uint16_t wait_time = 1000;
     struct qre1113_voltages voltages_val_buffer = {0,0,0,0};
     while(1) {
@@ -240,6 +240,18 @@ static void test_qre1113(void) {
         TRACE("Voltage front right = %u", voltages_val_buffer.front_right);
         TRACE("Voltage back left = %u", voltages_val_buffer.back_left);
         TRACE("Voltage back right = %u\n", voltages_val_buffer.back_right);
+        BUSY_WAIT_ms(wait_time);
+    }
+}
+
+SUPPRESS_UNUSED
+static void test_line(void) {
+    test_setup();
+    trace_init();
+    line_init();
+    const uint16_t wait_time = 1000;
+    while(1) {
+        TRACE("Line: %u", line_get());
         BUSY_WAIT_ms(wait_time);
     }
 }
