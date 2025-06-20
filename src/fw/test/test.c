@@ -8,6 +8,7 @@
 #include "drivers/pwm.h"
 #include "drivers/drv8848.h"
 #include "drivers/adc.h"
+#include "drivers/i2c.h"
 #include "drivers/qre1113.h"
 #include "common/defines.h"
 #include "common/assert_handler.h"
@@ -256,7 +257,62 @@ static void test_line(void) {
     }
 }
 
+SUPPRESS_UNUSED
+static void test_i2c_read(void) {
+    test_setup();
+    trace_init();
+    i2c_init();
+    const uint16_t wait_time = 1000;
+    io_set_out(XSHUT_MIDDLE, IO_OUT_HIGH); // Set XSHUT of laser sensor high to turn on device
+    BUSY_WAIT_ms(1000); // Wait for laser sensor to get out of standby mode/turn on
+    i2c_set_slave_address(0x29);
+    while(1) {
+        uint8_t vl53l0xid = 0;
+        e__i2c_result result = i2c_read_addr8_data8(0xC0, &vl53l0xid);
+        if (result != I2C_RESULT_OK)
+                TRACE("I2C Error: %d", result);
+        else if (vl53l0xid == 0xEE)
+                TRACE("Read expected VL53L0X ID (0xEE)");
+        else
+                TRACE("Read unexpected VL53L0X ID 0x%X (Expected 0xEE)", vl53l0xid);
+    BUSY_WAIT_ms(wait_time);
+    }    
+}
+
+SUPPRESS_UNUSED
+static void test_i2c_write(void) {
+    const uint16_t wait_time = 1000;
+    const uint8_t read_addr = 0x01;
+    uint8_t read_val;
+    uint8_t write_val;
+
+    test_setup();
+    trace_init();
+    i2c_init();
+    io_set_out(XSHUT_MIDDLE, IO_OUT_HIGH); // Set XSHUT of laser sensor high to turn on device
+    BUSY_WAIT_ms(1000); // Wait for laser sensor to get out of standby mode/turn on
+    i2c_set_slave_address(0x29);
+    while(1) {
+        // Write value to register
+        write_val = 0xAB;
+        e__i2c_result result = i2c_write_addr8_data8(read_addr, write_val);
+        if (result != I2C_RESULT_OK)
+                TRACE("I2C Error: %d", result);
+        // Read the written value back from register
+        result = i2c_read_addr8_data8(read_addr, &read_val);
+        if (result != I2C_RESULT_OK)
+                TRACE("I2C Error: %d", result); // I2C Error
+        else if (read_val == write_val)
+                TRACE("Read expected VL53L0X ID (0x%X)", write_val); // Read expected value
+        else
+                TRACE("Read unexpected VL53L0X ID 0x%X (Expected 0x%X)", read_val, write_val); // Did not read expected value
+    BUSY_WAIT_ms(wait_time);
+    }    
+}
+
 int main() {
     TEST(); // Define passed to Makefile to run a specific test function
     ASSERT(0);
 }
+
+

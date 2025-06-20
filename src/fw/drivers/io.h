@@ -212,9 +212,11 @@ typedef enum {
     XSHUT_RIGHT = IO_23,  // P2.3
     XSHUT_MIDDLE = IO_26, // P2.6
     XSHUT_LEFT = IO_81,   // P8.1
+
     //-- I2C pins
     I2C_SDA = IO_41, // P4.1
     I2C_SCL = IO_42, // P4.2
+
     //-- Interrupt pins (GPIO interrupt pins -> P1.x-P2.x)
     RANGE_INTERRUPT_RIGHT = IO_16,  // P1.6 (GPIO interrupt pin)
     RANGE_INTERRUPT_MIDDLE = IO_13, // P1.3 (GPIO interrupt pin)
