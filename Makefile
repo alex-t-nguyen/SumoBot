@@ -82,7 +82,7 @@ else
 MAIN_SRC_FILE = $(TEST_DIR)/$(TEST).c
 endif
 SRC_FILES_APP = drive.c enemy.c line.c
-SRC_FILES_DRIVERS = io.c led.c mcu_init.c uart.c ring_buffer.c pwm.c drv8848.c adc.c qre1113.c
+SRC_FILES_DRIVERS = io.c led.c mcu_init.c uart.c ring_buffer.c pwm.c drv8848.c adc.c qre1113.c i2c.c
 SRC_FILES_MOTOR = motors.c
 SRC_FILES_COMMON = assert_handler.c trace.c
 SRC_FILES_PRINTF = printf.c
