@@ -10,6 +10,7 @@
 #include "drivers/adc.h"
 #include "drivers/i2c.h"
 #include "drivers/qre1113.h"
+#include "drivers/vl53l0x.h"
 #include "common/defines.h"
 #include "common/assert_handler.h"
 #include "common/trace.h"
@@ -308,6 +309,28 @@ static void test_i2c_write(void) {
                 TRACE("Read unexpected VL53L0X ID 0x%X (Expected 0x%X)", read_val, write_val); // Did not read expected value
     BUSY_WAIT_ms(wait_time);
     }    
+}
+
+SUPPRESS_UNUSED
+static void test_vl53l0x(void) {
+    test_setup();
+    trace_init();
+    e__vl53l0x_result result = vl53l0x_init();
+    if (result != e_VL53L0X_RESULT_OK)
+            TRACE("vl53l0x_init failed");
+    while (1) {
+        uint16_t range = 0;
+        result = vl53l0x_read_range_single(e_VL53L0X_POS_FRONT, &range);
+        if (result != e_VL53L0X_RESULT_OK)
+                TRACE("Range measure failed (result %u)", result);
+        else {
+            if (range != VL53L0X_OUT_OF_RANGE)
+                    TRACE("Range %u mm", range);
+            else
+                    TRACE("Out of range");
+        }
+        BUSY_WAIT_ms(1000);
+    }
 }
 
 int main() {

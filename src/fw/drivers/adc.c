@@ -52,7 +52,7 @@ void adc_init(void) {
      * ADC12SHSx: Sample and hold source select (0: ADC12SC bit). Conversions
      * for the sequence of channels are triggered by a rising edge of this bit.
      * This acts as the SHI signal, which will trigger sampling on rising edge.
-     * Will be setting manually through interrupts. ADC12CONSEQ: Convesion
+     * Will be setting manually through interrupts. ADC12CONSEQ: Conversion
      * sequence mode as a sequence of channels. The ADC12 interrupt flag for the
      * last ADC12MEMx in the sequence (determined by ADC12EOS) can trigger a DMA
      * transfer ADC12ISSH: 0 (Don't invert selected ADC12SC signal (SHI))
@@ -118,7 +118,7 @@ void adc_init(void) {
      * DMADT: Transfer mode
      *          0: Single transfer (Each ADC input transfer requires an IFG
      * trigger and DMAEN gets reset after each transfer) 1: Block transfer
-     * (Transfer bock of ADC inputs with 1 IFG trigger and DMAEN gets reset
+     * (Transfer block of ADC inputs with 1 IFG trigger and DMAEN gets reset
      * after each transfer)
      *
      * DMADSTINCR: DMA destination address increment

@@ -126,11 +126,11 @@ static const struct io_config io_initial_configs[IO_PORT_CNT *
     [I2C_SCL] = {IO_SEL_ALT1, IO_DIR_OUTPUT, IO_REN_ENABLE, IO_OUT_HIGH},
     //-- Range sensor is open drain and should be pulled up by external pullup
     // resistor on PCB instead
-    [RANGE_INTERRUPT_RIGHT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE,
+    [RANGE_INTERRUPT_RIGHT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_DISABLE,
                                IO_OUT_LOW},
-    [RANGE_INTERRUPT_MIDDLE] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE,
+    [RANGE_INTERRUPT_MIDDLE] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_DISABLE,
                                 IO_OUT_LOW},
-    [RANGE_INTERRUPT_LEFT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_ENABLE,
+    [RANGE_INTERRUPT_LEFT] = {IO_SEL_GPIO, IO_DIR_INPUT, IO_REN_DISABLE,
                               IO_OUT_LOW},
 
     // Line Detector Sensor pins
