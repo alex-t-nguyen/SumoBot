@@ -6,7 +6,9 @@
 #include <stdbool.h>
 #include <stdint.h>
 
-#define RETRY_COUNT (UINT16_MAX) // Needs to be large enough to give hardware time to actually set registers (uint8_t max == 255, not long enough)
+#define RETRY_COUNT                                                            \
+    (UINT16_MAX) // Needs to be large enough to give hardware time to actually
+                 // set registers (uint8_t max == 255, not long enough)
 static bool initialized = false;
 
 static inline void i2c_set_tx_byte(uint8_t data) {
