@@ -29,8 +29,7 @@ struct vl53l0x_cfg {
 };
 
 static t__vl53l0x_ranges latest_ranges = {
-    VL53L0X_OUT_OF_RANGE, VL53L0X_OUT_OF_RANGE, VL53L0X_OUT_OF_RANGE,
-    VL53L0X_OUT_OF_RANGE, VL53L0X_OUT_OF_RANGE};
+    VL53L0X_OUT_OF_RANGE, VL53L0X_OUT_OF_RANGE, VL53L0X_OUT_OF_RANGE};
 
 // Array of VL53L0X structs that contain the addr and xshut io pin of each
 // VL53L0X device

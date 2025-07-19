@@ -312,7 +312,7 @@ static void test_i2c_write(void) {
 }
 
 SUPPRESS_UNUSED
-static void test_vl53l0x(void) {
+static void test_vl53l0x_single(void) {
     test_setup();
     trace_init();
     e__vl53l0x_result result = vl53l0x_init();
@@ -328,6 +328,32 @@ static void test_vl53l0x(void) {
                     TRACE("Range %u mm", range);
             else
                     TRACE("Out of range");
+        }
+        BUSY_WAIT_ms(1000);
+    }
+}
+
+SUPPRESS_UNUSED
+/*
+ * Can't test without breadboard to connect all 3 of the VL53L0X range sensors together
+ * to the launchpad
+ */
+static void test_vl53l0x_multiple(void) {
+    test_setup();
+    trace_init();
+    e__vl53l0x_result result = vl53l0x_init();
+    if (result != e_VL53L0X_RESULT_OK)
+            TRACE("vl53l0x_init failed");
+    while (1) {
+        t__vl53l0x_ranges ranges = {0, 0, 0};
+        bool fresh_values = false;
+        result = vl53l0x_read_range_multiple(ranges, &fresh_values);
+        if (result != e_VL53L0X_RESULT_OK)
+                TRACE("Range measure failed (result %u)", result);
+        else {
+                TRACE("Range measure f %u fl %u fr %u", ranges[e_VL53L0X_POS_FRONT],
+                                                        ranges[e_VL53L0X_POS_FRONT_LEFT],
+                                                        ranges[e_VL53L0X_POS_FRONT_RIGHT]);
         }
         BUSY_WAIT_ms(1000);
     }
