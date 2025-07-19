@@ -130,7 +130,7 @@
 // ------------------------------------ END REGISTER DEFINES
 // --------------------------------------- //
 #define VL53L0X_POS_CNT                                                        \
-    5 // Number of possible positions of enemey detected by range sensor
+    3 // Number of possible positions of enemey detected by range sensor
 #define VL53L0X_DEFAULT_ADDRESS 0x29
 #define VL53L0X_EXPECTED_DEVICE_ID 0xEE
 
