@@ -35,7 +35,7 @@ static t__vl53l0x_ranges latest_ranges = {
 // VL53L0X device
 static const struct vl53l0x_cfg vl53l0x_cfgs[VL53L0X_POS_CNT] = {
     [e_VL53L0X_POS_FRONT] = {.addr = 0x30, .xshut_io = XSHUT_MIDDLE},
-#ifdef SUMOBOT
+#ifdef MULTI_RANGE
     [e_VL53L0X_POS_FRONT_LEFT] = {.addr = 0x31, .xshut_io = XSHUT_LEFT},
     [e_VL53L0X_POS_FRONT_RIGHT] = {.addr = 0x32, .xshut_io = XSHUT_RIGHT}
 #endif
@@ -160,7 +160,7 @@ static e__vl53l0x_result vl53l0x_init_all_dev_addr(void) {
         e_VL53L0X_POS_FRONT); // Initialize device address of front range sensor
     if (result != e_VL53L0X_RESULT_OK)
         return result;
-#ifdef SUMOBOT
+#ifdef MULTI_RANGE
     result = vl53l0x_init_addr(
         e_VL53L0X_POS_FRONT_LEFT); // Initialize device address of front left
                                    // range sensor
@@ -657,6 +657,11 @@ static void vl53l0x_configure_front_sensors_interrupt(void) {
     ASSERT(io_config_compare(&range_interrupt_config, &current_config_middle));
     ASSERT(io_config_compare(&range_interrupt_config, &current_config_left));
 
+    // Deconfigure interrupts first for pins in case they're already set for some reason
+    io_deconfigure_interrupt(RANGE_INTERRUPT_RIGHT);
+    io_deconfigure_interrupt(RANGE_INTERRUPT_MIDDLE);
+    io_deconfigure_interrupt(RANGE_INTERRUPT_LEFT);
+
     io_configure_interrupt(RANGE_INTERRUPT_RIGHT, IO_TRIGGER_FALLING,
                            right_measurement_done_isr);
     io_configure_interrupt(RANGE_INTERRUPT_MIDDLE, IO_TRIGGER_FALLING,
@@ -773,6 +778,7 @@ e__vl53l0x_result vl53l0x_start_measuring_multiple(void) {
     if (result != e_VL53L0X_RESULT_OK) {
         return result;
     }
+    TRACE("measuring multiple");
     return e_VL53L0X_RESULT_OK;
 }
 
@@ -911,7 +917,7 @@ e__vl53l0x_result vl53l0x_init(void) {
     if (result != e_VL53L0X_RESULT_OK)
         return result;
     vl53l0x_init_config(e_VL53L0X_POS_FRONT);
-#ifdef SUMOBOT
+#ifdef MULTI_RANGE
     vl53l0x_init_config(e_VL53L0X_POS_FRONT_LEFT);
     vl53l0x_init_config(e_VL53L0X_POS_FRONT_RIGHT);
 #endif

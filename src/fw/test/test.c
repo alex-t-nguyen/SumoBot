@@ -1,6 +1,7 @@
 #include <msp430.h>
 #include <stdint.h>
 #include "app/line.h"
+#include "app/enemy.h"
 #include "drivers/mcu_init.h"
 #include "drivers/led.h"
 #include "drivers/io.h"
@@ -321,6 +322,7 @@ static void test_vl53l0x_single(void) {
     while (1) {
         uint16_t range = 0;
         result = vl53l0x_read_range_single(e_VL53L0X_POS_FRONT, &range);
+        TRACE("Read range done");
         if (result != e_VL53L0X_RESULT_OK)
                 TRACE("Range measure failed (result %u)", result);
         else {
@@ -351,10 +353,25 @@ static void test_vl53l0x_multiple(void) {
         if (result != e_VL53L0X_RESULT_OK)
                 TRACE("Range measure failed (result %u)", result);
         else {
-                TRACE("Range measure f %u fl %u fr %u", ranges[e_VL53L0X_POS_FRONT],
-                                                        ranges[e_VL53L0X_POS_FRONT_LEFT],
-                                                        ranges[e_VL53L0X_POS_FRONT_RIGHT]);
+                TRACE("Range measure fl: %u fm: %u fr: %u", ranges[e_VL53L0X_POS_FRONT_LEFT],
+                                                            ranges[e_VL53L0X_POS_FRONT],
+                                                            ranges[e_VL53L0X_POS_FRONT_RIGHT]);
         }
+        BUSY_WAIT_ms(1000);
+    }
+}
+
+SUPPRESS_UNUSED
+/**
+ * Test application software layer for calling vl53l0x driver files
+ */
+static void test_enemy_detect(void) {
+    test_setup();
+    trace_init();
+    enemy_init();
+    while(1) {
+        struct enemy enemy = enemy_get();
+        TRACE("ENEMY POSITION: %s, ENEMY RANGE: %s", enemy_pos_str(enemy.position), enemy_range_str(enemy.range));
         BUSY_WAIT_ms(1000);
     }
 }
